@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>增值服务 - 智能情绪健康与压力临床测评系统</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h1>智能情绪健康与压力临床测评系统</h1>
+          <span>Medical Grade Emotion Analysis</span>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="../index.html" class="nav-item">
+          <span>🏠</span> 首页仪表盘
+        </a>
+        <a href="detection.html" class="nav-item">
+          <span>📹</span> 实时情绪检测
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span>👤</span> 个人中心
+        </a>
+        <a href="history.html" class="nav-item">
+          <span>📊</span> 历史记录
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span>💎</span> 会员中心
+        </a>
+        <a href="#" class="nav-item active">
+          <span>🛠️</span> 增值服务
+        </a>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>Engine: <span id="engine-status" class="text-accent">Checking...</span></span>
+        </div>
+        <div class="compliance-badge">
+          <span>🛡️</span> HIPAA & GDPR Compliant
+        </div>
+        <button id="logoutBtn" class="btn btn-secondary btn-sm" onclick="confirmLogout()">
+          <span>🚪</span> 退出登录
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <h2 class="page-title">增值服务与工具</h2>
+        <p class="page-subtitle">专业的心理健康服务、放松训练和专家咨询，守护您的全面健康</p>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📚</div>
+              <div>
+                <h3>课程与咨询服务</h3>
+                <span>Courses & Consultation</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="courseGrid" class="course-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🧘</div>
+              <div>
+                <h3>放松训练</h3>
+                <span>Relaxation Training</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="inline-actions" style="flex-direction: column; gap: 16px;">
+              <button id="breathingBtn" class="btn btn-primary" style="width: 100%;">
+                <span>🌬️</span> 深呼吸练习
+              </button>
+              <button id="meditationBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>🧘</span> 正念冥想
+              </button>
+              <button id="relaxBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>🎵</span> 放松音乐
+              </button>
+            </div>
+            <div id="relaxationPanel" class="result-panel" style="margin-top: 20px;">
+              选择一种放松方式，让身心得到舒缓。
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">💬</div>
+              <div>
+                <h3>专家咨询</h3>
+                <span>Expert Consultation</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">咨询类型</label>
+              <select id="consultType" class="form-select">
+                <option value="career">职业发展规划</option>
+                <option value="relationship">人际关系</option>
+                <option value="stress">压力管理</option>
+                <option value="emotional">情绪调节</option>
+              </select>
+            </div>
+            <button id="bookConsultBtn" class="btn btn-primary" style="width: 100%;">
+              <span>📅</span> 预约专家咨询
+            </button>
+            <div style="margin-top: 16px; text-align: center;">
+              <span class="text-muted" style="font-size: 13px;">或</span>
+            </div>
+            <button id="anonymousConsultBtn" class="btn btn-secondary" style="width: 100%; margin-top: 16px;">
+              <span>🔒</span> 匿名咨询
+            </button>
+            <div id="consultPanel" class="result-panel" style="margin-top: 16px;">
+              选择咨询服务，我们专业的心理咨询师将为您提供帮助。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📋</div>
+              <div>
+                <h3>心理评估量表</h3>
+                <span>Psychological Assessment</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="inline-actions" style="flex-direction: column; gap: 12px;">
+              <button id="sasBtn" class="btn btn-primary" style="width: 100%;">
+                <span>📊</span> 焦虑自评量表 (SAS)
+              </button>
+              <button id="sdsBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>📊</span> 抑郁自评量表 (SDS)
+              </button>
+              <button id="pssBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>📊</span> 压力知觉量表 (PSS)
+              </button>
+            </div>
+            <div id="assessmentPanel" class="result-panel" style="margin-top: 20px;">
+              选择一个量表开始评估，了解您的心理健康状况。
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🎯</div>
+              <div>
+                <h3>AI 情感陪伴</h3>
+                <span>AI Companion</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">当前情绪状态</label>
+              <select id="companionEmotionSelect" class="form-select">
+                <option value="开心">😊 开心</option>
+                <option value="悲伤">😔 悲伤</option>
+                <option value="愤怒">😠 愤怒</option>
+                <option value="惊讶">😲 惊讶</option>
+                <option value="恐惧">😨 恐惧</option>
+                <option value="厌恶">😒 厌恶</option>
+                <option value="平静" selected>😌 平静</option>
+              </select>
+            </div>
+            <button id="companionBtn" class="btn btn-primary" style="width: 100%;">
+              <span>💬</span> 获取 AI 互动回应
+            </button>
+            <div id="companionPanel" class="result-panel" style="margin-top: 16px;">
+              AI 助手将根据您的情绪状态提供个性化的互动和支持。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📈</div>
+              <div>
+                <h3>实时情绪监测</h3>
+                <span>Live Emotion Monitoring</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <video id="liveVideo" autoplay playsinline muted style="width: 100%; border-radius: 12px; background: rgba(0,0,0,0.3); margin-bottom: 16px;"></video>
+            <div class="inline-actions" style="flex-direction: column; gap: 12px;">
+              <button id="startLiveBtn" class="btn btn-primary" style="width: 100%;">
+                <span>▶️</span> 开始实时监测
+              </button>
+              <button id="stopLiveBtn" class="btn btn-secondary hidden" style="width: 100%;">
+                <span>⏹️</span> 停止监测
+              </button>
+            </div>
+            <div id="liveEmotionDisplay" class="result-panel" style="margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <div>
+                  <p>当前情绪：<strong id="currentEmotion">-</strong></p>
+                  <p>置信度：<strong id="liveConfidence">-</strong></p>
+                </div>
+                <div style="text-align: right;">
+                  <p>持续时间：<strong id="sessionDuration">-</strong></p>
+                  <p>分析帧数：<strong id="frameCount">-</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">💓</div>
+              <div>
+                <h3>生理指标实时监测</h3>
+                <span>Biometrics Monitoring</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="biometrics-grid">
+              <div class="biometric-card">
+                <div class="biometric-icon">❤️</div>
+                <div class="biometric-value" id="heartRate">-</div>
+                <div class="biometric-label">心率 (HR)</div>
+                <div class="biometric-status good" id="heartRateStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">📊</div>
+                <div class="biometric-value" id="hrv">-</div>
+                <div class="biometric-label">HRV</div>
+                <div class="biometric-status good" id="hrvStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">🌬️</div>
+                <div class="biometric-value" id="breathRate">-</div>
+                <div class="biometric-label">呼吸率</div>
+                <div class="biometric-status good" id="breathStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">📈</div>
+                <div class="biometric-value" id="stressLevel">-</div>
+                <div class="biometric-label">压力水平</div>
+                <div class="biometric-status good" id="stressStatus">-</div>
+              </div>
+            </div>
+            <div id="biometricAdvice" class="result-panel" style="margin-top: 16px;">
+              <p class="text-accent" style="font-weight: 500;">健康建议</p>
+              <p id="biometricAdviceText">点击更新按钮获取最新生理指标</p>
+            </div>
+            <button id="updateBiometricsBtn" class="btn btn-secondary" style="width: 100%; margin-top: 12px;" onclick="updateBiometrics()">
+              <span>🔄</span> 更新指标
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 智能情绪健康与压力临床测评系统. All Rights Reserved.</p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+        本系统仅用于研究与演示。任何基于本系统的分析结果均不构成医疗建议。如有心理困扰，请咨询持证医生。
+      </p>
+    </footer>
+  </div>
+
+  <script src="../common.js"></script>
+  <script>
+    let breathingInterval = null;
+    let liveSessionId = null;
+    let liveInterval = null;
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      await bootstrap();
+      setupCourses();
+      setupRelaxation();
+      setupConsultation();
+      setupAssessmentScales();
+      setupCompanion();
+      setupLiveMonitoring();
+    });
+
+    async function bootstrap() {
+      try {
+        await loadUserOverview();
+        if (AppState.token) {
+          await loadData();
+        }
+      } catch (error) {
+        console.error("Bootstrap error:", error);
+      }
+    }
+
+    async function loadData() {
+      try {
+        const courses = await request("/api/courses", { method: "GET" });
+        renderCoursesGrid(document.getElementById("courseGrid"), courses || []);
+
+        await updateBiometrics();
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      }
+    }
+
+    function setupCourses() {
+      document.getElementById("courseGrid")?.addEventListener("click", function(e) {
+        if (e.target.tagName === "BUTTON") {
+          const courseTitle = e.target.closest(".course-card")?.querySelector(".course-title")?.textContent;
+          if (courseTitle) {
+            buyCourse(courseTitle);
+          }
+        }
+      });
+    }
+
+    function setupRelaxation() {
+      document.getElementById("breathingBtn")?.addEventListener("click", function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+        startBreathingExercise();
+      });
+
+      document.getElementById("meditationBtn")?.addEventListener("click", function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+        startMeditation();
+      });
+
+      document.getElementById("relaxBtn")?.addEventListener("click", function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+        playRelaxMusic();
+      });
+    }
+
+    function startBreathingExercise() {
+      const panel = document.getElementById("relaxationPanel");
+      panel.innerHTML = `
+        <div class="breathing-guide">
+          <div class="breathing-circle"></div>
+          <p class="breathing-text" id="breathingText">准备开始...</p>
+          <p class="breathing-countdown" id="breathingCountdown">4</p>
+        </div>
+      `;
+
+      let phase = 0;
+      let counter = 4;
+
+      breathingInterval = setInterval(() => {
+        const text = document.getElementById("breathingText");
+        const countdown = document.getElementById("breathingCountdown");
+        const circle = document.querySelector(".breathing-circle");
+
+        if (!text || !countdown || !circle) {
+          clearInterval(breathingInterval);
+          return;
+        }
+
+        if (phase === 0) {
+          text.textContent = "吸气...";
+          countdown.textContent = counter;
+          const scale = 0.85 + (1 - counter / 4) * 0.25;
+          circle.style.transform = `scale(${scale})`;
+        } else if (phase === 1) {
+          text.textContent = "屏息...";
+          countdown.textContent = counter;
+        } else {
+          text.textContent = "呼气...";
+          countdown.textContent = counter;
+          const scale = 1.1 - (1 - counter / 4) * 0.25;
+          circle.style.transform = `scale(${scale})`;
+        }
+
+        counter--;
+        if (counter < 0) {
+          phase = (phase + 1) % 3;
+          counter = phase === 1 ? 2 : 4;
+        }
+      }, 1000);
+
+      showToast("深呼吸练习开始", "success");
+    }
+
+    function startMeditation() {
+      const panel = document.getElementById("relaxationPanel");
+      panel.innerHTML = `
+        <div class="breathing-guide">
+          <div style="width: 120px; height: 120px; margin: 0 auto 24px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">🧘</span>
+          </div>
+          <p class="breathing-text">冥想模式已激活</p>
+          <p class="text-muted">请找一个安静的地方，闭上眼睛，专注于呼吸</p>
+        </div>
+      `;
+      showToast("冥想模式已开启", "success");
+    }
+
+    function playRelaxMusic() {
+      const panel = document.getElementById("relaxationPanel");
+      panel.innerHTML = `
+        <div class="breathing-guide">
+          <div style="width: 100px; height: 100px; margin: 0 auto 24px; border-radius: 50%; background: rgba(0, 200, 180, 0.2); display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite;">
+            <span style="font-size: 36px;">🎵</span>
+          </div>
+          <p class="breathing-text">放松音乐播放中</p>
+          <p class="text-muted">舒缓的音乐有助于放松身心，减轻压力</p>
+        </div>
+      `;
+      showToast("放松音乐已播放", "success");
+    }
+
+    function setupConsultation() {
+      document.getElementById("bookConsultBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "预约中...");
+        try {
+          const consultType = document.getElementById("consultType").value;
+          const result = await request("/api/consultation/book", {
+            method: "POST",
+            body: JSON.stringify({
+              type: consultType,
+              date: new Date(Date.now() + 86400000).toISOString().split("T")[0]
+            })
+          });
+
+          document.getElementById("consultPanel").innerHTML = `
+            <div style="padding: 16px; background: rgba(0, 200, 180, 0.1); border-radius: 12px;">
+              <p style="color: var(--success); font-weight: 500; margin-bottom: 12px;">✓ 预约成功</p>
+              <p><strong>咨询类型：</strong>${result.appointment?.type || consultType}</p>
+              <p><strong>预约时间：</strong>${result.appointment?.scheduled_date || "-"}</p>
+              <p><strong>咨询师：</strong>${result.appointment?.counselor_name || "待分配"}</p>
+              <p class="text-muted" style="font-size: 12px; margin-top: 12px;">我们会通过邮件发送确认信息</p>
+            </div>
+          `;
+          showToast("预约成功", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+
+      document.getElementById("anonymousConsultBtn")?.addEventListener("click", function() {
+        const panel = document.getElementById("consultPanel");
+        panel.innerHTML = `
+          <div style="padding: 16px;">
+            <p style="margin-bottom: 16px;"><strong>匿名咨询模式</strong></p>
+            <div style="background: rgba(106, 158, 255, 0.1); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+              <p class="text-muted" style="margin: 0;">您的身份信息将被完全保密</p>
+            </div>
+            <textarea id="anonymousMessage" class="form-textarea" rows="4" placeholder="请描述您的困扰..."></textarea>
+            <button id="sendAnonymousBtn" class="btn btn-primary" style="width: 100%; margin-top: 12px;">
+              <span>📤</span> 发送咨询
+            </button>
+          </div>
+        `;
+
+        document.getElementById("sendAnonymousBtn")?.addEventListener("click", async function() {
+          const message = document.getElementById("anonymousMessage")?.value?.trim();
+          if (!message) {
+            showToast("请输入咨询内容", "warning");
+            return;
+          }
+
+          showLoading(this, "发送中...");
+          try {
+            const result = await request("/api/consultation/anonymous", {
+              method: "POST",
+              body: JSON.stringify({ message })
+            });
+
+            panel.innerHTML = `
+              <div style="padding: 16px;">
+                <p style="margin-bottom: 12px;"><strong>AI 咨询师回复：</strong></p>
+                <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 10px;">
+                  <p class="text-muted" style="line-height: 1.6;">${result.response || "感谢您的咨询，我们会尽快回复您。"}</p>
+                </div>
+              </div>
+            `;
+            showToast("咨询已发送", "success");
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            hideLoading(this);
+          }
+        });
+      });
+    }
+
+    function setupAssessmentScales() {
+      document.getElementById("sasBtn")?.addEventListener("click", () => loadAssessmentScale("sas"));
+      document.getElementById("sdsBtn")?.addEventListener("click", () => loadAssessmentScale("sds"));
+      document.getElementById("pssBtn")?.addEventListener("click", () => loadAssessmentScale("pss"));
+    }
+
+    async function loadAssessmentScale(scaleType) {
+      if (!AppState.token) {
+        showToast("请先登录", "warning");
+        return;
+      }
+
+      try {
+        const result = await request(`/api/assessment/scales/${scaleType}`, { method: "GET" });
+        const panel = document.getElementById("assessmentPanel");
+
+        panel.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin: 0 0 8px; color: var(--text-primary);">${result.scale_name}</h4>
+            <p class="text-muted" style="font-size: 13px;">共 ${result.question_count} 道题目</p>
+          </div>
+          <div id="assessmentQuestions">
+            ${result.questions.map((q, index) => `
+              <div class="assessment-question">
+                <h4>${index + 1}. ${q.question}</h4>
+                <div class="assessment-options">
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 1, this)">完全没有</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 2, this)">有一点</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 3, this)">中等程度</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 4, this)">相当多</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <button id="submitAssessmentBtn" class="btn btn-primary" style="width: 100%; margin-top: 20px; display: none;">
+            提交评估
+          </button>
+        `;
+
+        AppState.currentAssessment = { scaleType, answers: {}, questionCount: result.question_count };
+        AppState.assessmentAnswers = {};
+
+        document.getElementById("submitAssessmentBtn")?.addEventListener("click", () => submitAssessment(scaleType));
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    }
+
+    function selectAnswer(key, value, btn) {
+      AppState.assessmentAnswers[key] = value;
+
+      const questionDiv = btn.closest(".assessment-question");
+      questionDiv.querySelectorAll(".assessment-option").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+
+      checkAssessmentComplete();
+    }
+
+    function checkAssessmentComplete() {
+      const questionCount = AppState.currentAssessment?.questionCount || 0;
+      const answeredCount = Object.keys(AppState.assessmentAnswers).length;
+      const submitBtn = document.getElementById("submitAssessmentBtn");
+
+      if (answeredCount >= questionCount && questionCount > 0) {
+        submitBtn.style.display = "block";
+      }
+    }
+
+    async function submitAssessment(scaleType) {
+      try {
+        const result = await request(`/api/assessment/${scaleType}`, {
+          method: "POST",
+          body: JSON.stringify({ answers: AppState.assessmentAnswers })
+        });
+
+        const panel = document.getElementById("assessmentPanel");
+        panel.innerHTML = `
+          <div class="assessment-result">
+            <div class="result-score">${result.standard_score}</div>
+            <div class="result-level ${result.level.toLowerCase()}">${result.level}</div>
+            <div class="result-interpretation">
+              <p><strong>评分说明：</strong></p>
+              <p>原始分：${result.raw_score} 分</p>
+              <p>标准分：${result.standard_score} 分</p>
+              <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border-subtle);">
+              <p><strong>评估解读：</strong></p>
+              <p>${result.interpretation}</p>
+            </div>
+          </div>
+        `;
+
+        showToast("评估完成", "success");
+        AppState.assessmentAnswers = {};
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    }
+
+    function setupCompanion() {
+      document.getElementById("companionBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "思考中...");
+        try {
+          const emotion = document.getElementById("companionEmotionSelect").value;
+          const result = await request("/api/companion/respond", {
+            method: "POST",
+            body: JSON.stringify({ emotion })
+          });
+
+          document.getElementById("companionPanel").textContent = result.message;
+          showToast("助手已回复", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function setupLiveMonitoring() {
+      document.getElementById("startLiveBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        try {
+          const result = await request("/api/video/create-session", { method: "POST" });
+          liveSessionId = result.session_id;
+
+          if (!AppState.stream) {
+            await startCamera(document.getElementById("liveVideo"));
+          } else {
+            document.getElementById("liveVideo").srcObject = AppState.stream;
+          }
+
+          this.style.display = "none";
+          document.getElementById("stopLiveBtn").classList.remove("hidden");
+          startLiveAnalysis();
+
+          showToast("实时监测已开始", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+
+      document.getElementById("stopLiveBtn")?.addEventListener("click", function() {
+        clearInterval(liveInterval);
+        liveInterval = null;
+
+        if (liveSessionId) {
+          request(`/api/video/session-summary/${liveSessionId}`, { method: "GET" }).catch(() => {});
+        }
+        liveSessionId = null;
+
+        document.getElementById("startLiveBtn").style.display = "inline-flex";
+        this.classList.add("hidden");
+        document.getElementById("currentEmotion").textContent = "-";
+        document.getElementById("liveConfidence").textContent = "-";
+        document.getElementById("sessionDuration").textContent = "-";
+        document.getElementById("frameCount").textContent = "-";
+
+        showToast("实时监测已停止", "info");
+      });
+    }
+
+    function startLiveAnalysis() {
+      let frameCount = 0;
+      let startTime = Date.now();
+
+      liveInterval = setInterval(async function() {
+        if (!liveSessionId) return;
+
+        try {
+          const video = document.getElementById("liveVideo");
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          canvas.getContext("2d").drawImage(video, 0, 0);
+          const frameBase64 = canvas.toDataURL("image/jpeg", 0.8);
+
+          const result = await request("/api/video/process-frame", {
+            method: "POST",
+            body: JSON.stringify({
+              session_id: liveSessionId,
+              frame_base64: frameBase64,
+              timestamp: Date.now()
+            })
+          });
+
+          document.getElementById("currentEmotion").textContent = result.emotion || "-";
+          document.getElementById("liveConfidence").textContent = result.confidence || "-";
+          document.getElementById("frameCount").textContent = ++frameCount;
+
+          const duration = Math.floor((Date.now() - startTime) / 1000);
+          const mins = Math.floor(duration / 60);
+          const secs = duration % 60;
+          document.getElementById("sessionDuration").textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+        } catch (error) {
+          console.error("Live analysis error:", error);
+        }
+      }, 500);
+    }
+
+    async function updateBiometrics() {
+      if (!AppState.token) return;
+
+      try {
+        const result = await request("/api/health/biometrics", { method: "GET" });
+
+        document.getElementById("heartRate").textContent = result.heart_rate || "-";
+        document.getElementById("hrv").textContent = result.hrv || "-";
+        document.getElementById("breathRate").textContent = result.breathing_rate || "-";
+        document.getElementById("stressLevel").textContent = result.stress_percentage || "-";
+
+        document.getElementById("heartRateStatus").textContent = result.heart_rate_status || "-";
+        document.getElementById("hrvStatus").textContent = result.hrv_status || "-";
+        document.getElementById("breathStatus").textContent = result.breathing_rate_status || "-";
+        document.getElementById("stressStatus").textContent = result.stress_level_status || "-";
+
+        document.getElementById("biometricAdviceText").textContent = result.health_advice || "暂无建议";
+      } catch (error) {
+        console.error("Biometrics error:", error);
+      }
+    }
+
+    function confirmLogout() {
+      if (confirm("确定要退出登录吗？")) {
+        logout();
+        window.location.href = "../index.html";
+      }
+    }
+
+    window.selectAnswer = selectAnswer;
+    window.submitAssessment = submitAssessment;
+    window.updateBiometrics = updateBiometrics;
+    window.confirmLogout = confirmLogout;
+  </script>
+</body>
+</html>

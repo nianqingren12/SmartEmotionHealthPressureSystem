@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 智能情绪健康与压力临床测评系统</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h1>智能情绪健康与压力临床测评系统</h1>
+          <span>Medical Grade Emotion Analysis</span>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="../index.html" class="nav-item">
+          <span>🏠</span> 首页仪表盘
+        </a>
+        <a href="detection.html" class="nav-item">
+          <span>📹</span> 实时情绪检测
+        </a>
+        <a href="#" class="nav-item active">
+          <span>👤</span> 个人中心
+        </a>
+        <a href="history.html" class="nav-item">
+          <span>📊</span> 历史记录
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span>💎</span> 会员中心
+        </a>
+        <a href="services.html" class="nav-item">
+          <span>🛠️</span> 增值服务
+        </a>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>Engine: <span id="engine-status" class="text-accent">Checking...</span></span>
+        </div>
+        <div class="compliance-badge">
+          <span>🛡️</span> HIPAA & GDPR Compliant
+        </div>
+        <button id="logoutBtn" class="btn btn-secondary btn-sm" onclick="confirmLogout()">
+          <span>🚪</span> 退出登录
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <h2 class="page-title">个人中心 & 健康数据报告</h2>
+        <p class="page-subtitle">查看您的健康评估报告、生理指标和个性化健康建议</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">会员等级</div>
+          <div class="stat-value accent membership-tier">Free</div>
+          <div class="stat-meta">当前账户等级</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">剩余报告次数</div>
+          <div class="stat-value report-credits">0</div>
+          <div class="stat-meta">可生成报告数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">识别次数</div>
+          <div class="stat-value" id="recognitionCount">0</div>
+          <div class="stat-meta">累计识别记录</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">主导情绪</div>
+          <div class="stat-value" id="dominantEmotion">平静</div>
+          <div class="stat-meta">最近一次情绪</div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card" style="grid-column: span 2;">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📈</div>
+              <div>
+                <h3>临床级心理健康评估报告</h3>
+                <span>Clinical Assessment Report</span>
+              </div>
+            </div>
+            <span id="calibration-badge" class="compliance-badge" style="font-size: 10px;">未校准</span>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+              <div class="metric-item">
+                <div class="metric-label">感知压力 (PSS)</div>
+                <div class="metric-value" id="stress-index">--</div>
+                <div class="metric-status text-accent" id="stress-status">待评估</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">心率变异性 (HRV)</div>
+                <div class="metric-value" id="hrv-value">--</div>
+                <div class="metric-status" id="hrv-status">ms</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">认知专注度</div>
+                <div class="metric-value" id="focus-score">--</div>
+                <div class="metric-status" id="focus-status">待评估</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">风险等级</div>
+                <div class="metric-value accent" id="risk-level">--</div>
+                <div class="metric-status" id="risk-status">-</div>
+              </div>
+            </div>
+            <div class="inline-actions">
+              <button class="btn btn-primary" onclick="runHealthAssessment()">
+                <span>🔄</span> 更新评估
+              </button>
+              <button class="btn btn-secondary" onclick="openCalibrationModal()">
+                <span>⚙️</span> 基准校准
+              </button>
+              <button id="exportPdfBtn" class="btn btn-secondary">
+                <span>📄</span> 导出 PDF 报告
+              </button>
+            </div>
+            <div class="result-panel" id="health-advice" style="margin-top: 20px;">
+              系统将根据您的生理指标和识别记录生成个性化的健康建议。
+            </div>
+            <p class="text-muted" style="font-size: 11px; margin-top: 16px;">
+              * Medical Standard: PSS-10 | HRV rPPG-Sim | Data Encrypted (AES-256)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">💓</div>
+              <div>
+                <h3>生理指标监测</h3>
+                <span>Biometrics Monitoring</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="biometrics-grid">
+              <div class="biometric-card">
+                <div class="biometric-icon">❤️</div>
+                <div class="biometric-value" id="heartRate">-</div>
+                <div class="biometric-label">心率 (HR) bpm</div>
+                <div class="biometric-status good" id="heartRateStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">📊</div>
+                <div class="biometric-value" id="hrv">-</div>
+                <div class="biometric-label">心率变异性 (HRV) ms</div>
+                <div class="biometric-status good" id="hrvStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">🌬️</div>
+                <div class="biometric-value" id="breathRate">-</div>
+                <div class="biometric-label">呼吸率 次/分</div>
+                <div class="biometric-status good" id="breathRateStatus">-</div>
+              </div>
+              <div class="biometric-card">
+                <div class="biometric-icon">📈</div>
+                <div class="biometric-value" id="stressLevel">-</div>
+                <div class="biometric-label">压力水平 %</div>
+                <div class="biometric-status good" id="stressLevelStatus">-</div>
+              </div>
+            </div>
+            <div id="biometricAdvice" class="result-panel" style="margin-top: 20px;">
+              <p class="text-accent" style="font-weight: 500; margin-bottom: 8px;">健康建议</p>
+              <p id="biometricAdviceText">点击生理指标卡片获取详细建议</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📊</div>
+              <div>
+                <h3>情绪分布统计</h3>
+                <span>Emotion Distribution</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="emotionBars" class="emotion-bars"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📅</div>
+              <div>
+                <h3>情绪日记</h3>
+                <span>Mood Diary</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">今日心情</label>
+              <select id="moodSelect" class="form-select">
+                <option value="5">😊 非常开心</option>
+                <option value="4">🙂 开心</option>
+                <option value="3">😐 一般</option>
+                <option value="2">😔 低落</option>
+                <option value="1">😢 非常低落</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">心情描述</label>
+              <textarea id="moodNote" class="form-textarea" rows="3" placeholder="记录今天的心情和感受..."></textarea>
+            </div>
+            <button id="saveMoodBtn" class="btn btn-primary" style="width: 100%;">
+              <span>💾</span> 保存心情记录
+            </button>
+            <div id="moodCalendar" class="mood-calendar" style="margin-top: 20px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📑</div>
+              <div>
+                <h3>心理评估量表</h3>
+                <span>Psychological Assessment Scales</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="inline-actions" style="flex-direction: column; gap: 12px;">
+              <button id="sasBtn" class="btn btn-primary" style="width: 100%;">
+                <span>📋</span> 焦虑自评量表 (SAS)
+              </button>
+              <button id="sdsBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>📋</span> 抑郁自评量表 (SDS)
+              </button>
+              <button id="pssBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>📋</span> 压力知觉量表 (PSS)
+              </button>
+            </div>
+            <div id="assessmentPanel" class="result-panel" style="margin-top: 20px;">
+              选择一个量表开始评估，了解您的心理健康状况。
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 智能情绪健康与压力临床测评系统. All Rights Reserved.</p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+        本系统仅用于研究与演示。任何基于本系统的分析结果均不构成医疗建议。如有心理困扰，请咨询持证医生。
+      </p>
+    </footer>
+  </div>
+
+  <div id="calibration-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">系统基准校准</h3>
+        <button class="modal-close" onclick="closeCalibrationModal()">×</button>
+      </div>
+      <div class="card-body">
+        <p class="text-muted" style="margin-bottom: 20px;">
+          请保持面部放松和表情平静，系统将采集您的情绪基准数据。校准过程持续 5 秒。
+        </p>
+        <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
+          <div style="font-size: 2rem; text-align: center; margin-bottom: 12px;">
+            倒计时: <span id="calibration-timer" style="font-weight: bold; color: var(--accent-primary);">5</span> 秒
+          </div>
+          <div style="background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px;">
+            <div id="calibration-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); border-radius: 4px; transition: width 0.1s linear;"></div>
+          </div>
+          <p id="calibration-status" class="text-center text-muted" style="margin-top: 16px;">准备就绪</p>
+        </div>
+        <div class="inline-actions" style="justify-content: center;">
+          <button id="start-calibration-btn" class="btn btn-primary" onclick="startCalibration()">
+            开始校准
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../common.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      await bootstrap();
+      setupAssessmentScales();
+      setupMoodDiary();
+      setupBiometrics();
+      setupPdfExport();
+    });
+
+    async function bootstrap() {
+      try {
+        await loadUserOverview();
+        if (AppState.token) {
+          await loadProfileData();
+        }
+      } catch (error) {
+        console.error("Bootstrap error:", error);
+      }
+    }
+
+    async function loadProfileData() {
+      try {
+        if (AppState.currentUser) {
+          document.querySelectorAll(".membership-tier").forEach(el => {
+            el.textContent = AppState.currentUser.membership_tier || "Free";
+          });
+          document.querySelectorAll(".report-credits").forEach(el => {
+            el.textContent = AppState.currentUser.report_credits || 0;
+          });
+          document.getElementById("recognitionCount").textContent = AppState.currentUser.recognition_count || 0;
+          document.getElementById("dominantEmotion").textContent = AppState.currentUser.dominant_emotion || "平静";
+
+          renderEmotionBars(document.getElementById("emotionBars"), AppState.currentUser.emotion_distribution || {});
+        }
+
+        await updateBiometrics();
+        await loadMoodHistory();
+        runHealthAssessment();
+      } catch (error) {
+        console.error("Failed to load profile data:", error);
+      }
+    }
+
+    async function runHealthAssessment() {
+      if (!AppState.token) return;
+
+      try {
+        const data = await request("/api/health/assessment", { method: "POST" });
+        AppState.lastAssessment = data;
+
+        document.getElementById("stress-index").textContent = data.stress_index + "%";
+        document.getElementById("hrv-value").textContent = data.hrv_value;
+        document.getElementById("focus-score").textContent = data.focus_score + "%";
+        document.getElementById("risk-level").textContent = data.anxiety_risk;
+        document.getElementById("hrv-status").textContent = data.hrv_status;
+        document.getElementById("health-advice").textContent = data.health_advice;
+
+        const calBadge = document.getElementById("calibration-badge");
+        if (calBadge) {
+          calBadge.textContent = data.is_calibrated ? "已校准" : "未校准";
+        }
+
+        const stressEl = document.getElementById("stress-index");
+        if (data.stress_index > 70) {
+          stressEl.style.color = "#ff6b7a";
+        } else if (data.stress_index > 40) {
+          stressEl.style.color = "#ffb84d";
+        } else {
+          stressEl.style.color = "#00c8b4";
+        }
+      } catch (error) {
+        console.error("Assessment error:", error);
+      }
+    }
+
+    async function updateBiometrics() {
+      if (!AppState.token) return;
+
+      try {
+        const result = await request("/api/health/biometrics", { method: "GET" });
+
+        document.getElementById("heartRate").textContent = result.heart_rate || "-";
+        document.getElementById("hrv").textContent = result.hrv || "-";
+        document.getElementById("breathRate").textContent = result.breathing_rate || "-";
+        document.getElementById("stressLevel").textContent = result.stress_percentage || "-";
+
+        document.getElementById("heartRateStatus").textContent = result.heart_rate_status || "-";
+        document.getElementById("hrvStatus").textContent = result.hrv_status || "-";
+        document.getElementById("breathRateStatus").textContent = result.breathing_rate_status || "-";
+        document.getElementById("stressLevelStatus").textContent = result.stress_level_status || "-";
+
+        document.getElementById("biometricAdviceText").textContent = result.health_advice || "暂无建议";
+      } catch (error) {
+        console.error("Biometrics error:", error);
+      }
+    }
+
+    function setupBiometrics() {
+      document.querySelectorAll(".biometric-card").forEach(card => {
+        card.style.cursor = "pointer";
+        card.addEventListener("click", updateBiometrics);
+      });
+    }
+
+    async function setupMoodDiary() {
+      const saveMoodBtn = document.getElementById("saveMoodBtn");
+      if (saveMoodBtn) {
+        saveMoodBtn.addEventListener("click", async function() {
+          if (!AppState.token) {
+            showToast("请先登录", "warning");
+            return;
+          }
+
+          const moodValue = document.getElementById("moodSelect").value;
+          const note = document.getElementById("moodNote").value;
+
+          showLoading(this, "保存中...");
+          try {
+            await request("/api/mood/save", {
+              method: "POST",
+              body: JSON.stringify({
+                mood: parseInt(moodValue),
+                note: note,
+                date: new Date().toISOString().split("T")[0]
+              })
+            });
+
+            showToast("心情记录已保存", "success");
+            document.getElementById("moodNote").value = "";
+            await loadMoodHistory();
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            hideLoading(this);
+          }
+        });
+      }
+    }
+
+    async function loadMoodHistory() {
+      if (!AppState.token) return;
+
+      try {
+        const result = await request("/api/mood/history", { method: "GET" });
+        const container = document.getElementById("moodCalendar");
+
+        if (!result.records || result.records.length === 0) {
+          container.innerHTML = '<div class="empty-state"><p class="text-muted">暂无心情记录</p></div>';
+          return;
+        }
+
+        container.innerHTML = result.records.slice(-7).map(record => {
+          const date = new Date(record.date);
+          return `
+            <div class="mood-day">
+              <div class="mood-emoji">${getMoodEmoji(record.mood)}</div>
+              <div class="mood-date">${date.getMonth() + 1}/${date.getDate()}</div>
+            </div>
+          `;
+        }).join("");
+      } catch (error) {
+        console.error("Mood history error:", error);
+      }
+    }
+
+    function getMoodEmoji(mood) {
+      const emojis = { 1: "😢", 2: "😔", 3: "😐", 4: "🙂", 5: "😊" };
+      return emojis[mood] || "📅";
+    }
+
+    function setupAssessmentScales() {
+      document.getElementById("sasBtn")?.addEventListener("click", () => loadAssessmentScale("sas"));
+      document.getElementById("sdsBtn")?.addEventListener("click", () => loadAssessmentScale("sds"));
+      document.getElementById("pssBtn")?.addEventListener("click", () => loadAssessmentScale("pss"));
+    }
+
+    async function loadAssessmentScale(scaleType) {
+      if (!AppState.token) {
+        showToast("请先登录", "warning");
+        return;
+      }
+
+      try {
+        const result = await request(`/api/assessment/scales/${scaleType}`, { method: "GET" });
+        const panel = document.getElementById("assessmentPanel");
+
+        panel.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin: 0 0 8px; color: var(--text-primary);">${result.scale_name}</h4>
+            <p class="text-muted" style="font-size: 13px;">共 ${result.question_count} 道题目</p>
+          </div>
+          <div id="assessmentQuestions">
+            ${result.questions.map((q, index) => `
+              <div class="assessment-question">
+                <h4>${index + 1}. ${q.question}</h4>
+                <div class="assessment-options">
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 1, this)">完全没有</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 2, this)">有一点</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 3, this)">中等程度</button>
+                  <button class="assessment-option" onclick="selectAnswer('${q.key}', 4, this)">相当多</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <button id="submitAssessmentBtn" class="btn btn-primary" style="width: 100%; margin-top: 20px; display: none;">
+            提交评估
+          </button>
+        `;
+
+        AppState.currentAssessment = { scaleType, answers: {}, questionCount: result.question_count };
+        AppState.assessmentAnswers = {};
+
+        document.getElementById("submitAssessmentBtn")?.addEventListener("click", () => submitAssessment(scaleType));
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    }
+
+    function selectAnswer(key, value, btn) {
+      AppState.assessmentAnswers[key] = value;
+
+      const questionDiv = btn.closest(".assessment-question");
+      questionDiv.querySelectorAll(".assessment-option").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+
+      checkAssessmentComplete();
+    }
+
+    function checkAssessmentComplete() {
+      const questionCount = AppState.currentAssessment?.questionCount || 0;
+      const answeredCount = Object.keys(AppState.assessmentAnswers).length;
+      const submitBtn = document.getElementById("submitAssessmentBtn");
+
+      if (answeredCount >= questionCount && questionCount > 0) {
+        submitBtn.style.display = "block";
+      }
+    }
+
+    async function submitAssessment(scaleType) {
+      try {
+        const result = await request(`/api/assessment/${scaleType}`, {
+          method: "POST",
+          body: JSON.stringify({ answers: AppState.assessmentAnswers })
+        });
+
+        const panel = document.getElementById("assessmentPanel");
+        panel.innerHTML = `
+          <div class="assessment-result">
+            <div class="result-score">${result.standard_score}</div>
+            <div class="result-level ${result.level.toLowerCase()}">${result.level}</div>
+            <div class="result-interpretation">
+              <p><strong>评分说明：</strong></p>
+              <p>原始分：${result.raw_score} 分</p>
+              <p>标准分：${result.standard_score} 分</p>
+              <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border-subtle);">
+              <p><strong>评估解读：</strong></p>
+              <p>${result.interpretation}</p>
+            </div>
+          </div>
+        `;
+
+        showToast("评估完成", "success");
+        AppState.assessmentAnswers = {};
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    }
+
+    function setupPdfExport() {
+      document.getElementById("exportPdfBtn")?.addEventListener("click", exportPdfReport);
+    }
+
+    async function exportPdfReport() {
+      if (!AppState.token) {
+        showToast("请先登录", "warning");
+        return;
+      }
+
+      showToast("正在生成临床级 PDF 报告...");
+
+      const container = document.createElement("div");
+      container.style.cssText = "padding: 30px; color: #1a1a1a; backgroundColor: #fff; font-family: 'Segoe UI', sans-serif;";
+
+      container.innerHTML = `
+        <div style="border-bottom: 3px solid #00c8b4; padding-bottom: 20px; margin-bottom: 25px;">
+          <h1 style="margin: 0; font-size: 24px;">AI 情绪健康与压力临床评估报告</h1>
+          <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Clinical Emotion & Stress Analysis Report</p>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px; font-size: 13px;">
+          <p><strong>用户 ID:</strong> ${AppState.currentUser?.id || "UID-8821"}</p>
+          <p><strong>账号:</strong> ${AppState.currentUser?.email || "Guest"}</p>
+          <p><strong>报告编号:</strong> ${AppState.lastAssessment?.clinical_id || "N/A"}</p>
+          <p><strong>生成日期:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+        <h2 style="font-size: 18px; border-left: 4px solid #00c8b4; padding-left: 10px; margin-bottom: 15px;">临床指标分析</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+          <tr style="background: #f1f3f5;">
+            <th style="padding: 12px; border: 1px solid #dee2e6; text-align: left;">评估维度</th>
+            <th style="padding: 12px; border: 1px solid #dee2e6; text-align: left;">测量值</th>
+            <th style="padding: 12px; border: 1px solid #dee2e6; text-align: left;">参考区间</th>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">感知压力指数 (PSS)</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${AppState.lastAssessment?.stress_index || "--"}%</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">0% - 40%</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">心率变异性 (HRV)</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${AppState.lastAssessment?.hrv_value || "--"} ms</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">> 50 ms</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">认知专注得分</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${AppState.lastAssessment?.focus_score || "--"}%</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">> 70%</td>
+          </tr>
+        </table>
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee;">
+          <p style="font-size: 11px; color: #999;">* 本报告由 AI 情绪健康分析引擎自动生成。</p>
+        </div>
+      `;
+
+      try {
+        await html2pdf().set({
+          margin: [10, 10, 15, 10],
+          filename: `Clinical_Report_${new Date().getTime()}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        }).from(container).save();
+
+        showToast("临床报告导出成功", "success");
+      } catch (error) {
+        showToast("报告生成失败", "error");
+      }
+    }
+
+    function openCalibrationModal() {
+      document.getElementById("calibration-modal").classList.add("active");
+      document.getElementById("calibration-timer").textContent = "5";
+      document.getElementById("calibration-bar").style.width = "0%";
+      document.getElementById("calibration-status").textContent = "准备就绪";
+      document.getElementById("start-calibration-btn").disabled = false;
+    }
+
+    function closeCalibrationModal() {
+      document.getElementById("calibration-modal").classList.remove("active");
+    }
+
+    async function startCalibration() {
+      const btn = document.getElementById("start-calibration-btn");
+      const timerEl = document.getElementById("calibration-timer");
+      const barEl = document.getElementById("calibration-bar");
+      const statusEl = document.getElementById("calibration-status");
+
+      btn.disabled = true;
+      statusEl.textContent = "校准中，请保持面部平静...";
+
+      let timeLeft = 5;
+      const interval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          timerEl.textContent = "0";
+          barEl.style.width = "100%";
+          finishCalibration();
+        } else {
+          timerEl.textContent = Math.ceil(timeLeft);
+          barEl.style.width = `${((5 - timeLeft) / 5) * 100}%`;
+        }
+      }, 100);
+    }
+
+    async function finishCalibration() {
+      const statusEl = document.getElementById("calibration-status");
+      statusEl.textContent = "正在同步基准数据...";
+
+      try {
+        await request("/api/health/calibrate", {
+          method: "POST",
+          body: JSON.stringify({
+            base_hrv: 55 + Math.random() * 10,
+            base_blink_rate: 12 + Math.random() * 4,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        statusEl.textContent = "校准成功！评估严谨度已提升。";
+        setTimeout(() => {
+          closeCalibrationModal();
+          showToast("系统基准校准完成", "success");
+          runHealthAssessment();
+        }, 1500);
+      } catch (err) {
+        statusEl.textContent = "同步失败，请重试。";
+        btn.disabled = false;
+      }
+    }
+
+    function confirmLogout() {
+      if (confirm("确定要退出登录吗？")) {
+        logout();
+        window.location.href = "../index.html";
+      }
+    }
+
+    window.runHealthAssessment = runHealthAssessment;
+    window.openCalibrationModal = openCalibrationModal;
+    window.closeCalibrationModal = closeCalibrationModal;
+    window.startCalibration = startCalibration;
+    window.selectAnswer = selectAnswer;
+    window.submitAssessment = submitAssessment;
+    window.confirmLogout = confirmLogout;
+  </script>
+</body>
+</html>

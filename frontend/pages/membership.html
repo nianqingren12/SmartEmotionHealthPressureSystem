@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员中心 - 智能情绪健康与压力临床测评系统</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h1>智能情绪健康与压力临床测评系统</h1>
+          <span>Medical Grade Emotion Analysis</span>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="../index.html" class="nav-item">
+          <span>🏠</span> 首页仪表盘
+        </a>
+        <a href="detection.html" class="nav-item">
+          <span>📹</span> 实时情绪检测
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span>👤</span> 个人中心
+        </a>
+        <a href="history.html" class="nav-item">
+          <span>📊</span> 历史记录
+        </a>
+        <a href="#" class="nav-item active">
+          <span>💎</span> 会员中心
+        </a>
+        <a href="services.html" class="nav-item">
+          <span>🛠️</span> 增值服务
+        </a>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>Engine: <span id="engine-status" class="text-accent">Checking...</span></span>
+        </div>
+        <div class="compliance-badge">
+          <span>🛡️</span> HIPAA & GDPR Compliant
+        </div>
+        <button id="logoutBtn" class="btn btn-secondary btn-sm" onclick="confirmLogout()">
+          <span>🚪</span> 退出登录
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <h2 class="page-title">会员套餐商业化中心</h2>
+        <p class="page-subtitle">选择适合您的会员方案，解锁更多高级功能和服务</p>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom: 40px;">
+        <div class="stat-card">
+          <div class="stat-label">当前等级</div>
+          <div class="stat-value accent membership-tier">Free</div>
+          <div class="stat-meta">会员等级</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">剩余额度</div>
+          <div class="stat-value report-credits">0</div>
+          <div class="stat-meta">报告生成次数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">识别次数</div>
+          <div class="stat-value" id="recognitionCount">0</div>
+          <div class="stat-meta">本月识别</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">到期时间</div>
+          <div class="stat-value" id="validUntil">--</div>
+          <div class="stat-meta">会员有效期</div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card" style="grid-column: span 2;">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">💎</div>
+              <div>
+                <h3>会员套餐</h3>
+                <span>Membership Plans</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="plansGrid" class="plans-grid"></div>
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
+              <h4 style="margin-bottom: 16px; color: var(--text-primary);">激活码充值</h4>
+              <div class="form-group">
+                <label class="form-label">请输入激活码</label>
+                <input type="text" id="rechargeInput" class="form-input" placeholder="请输入充值密钥 (如: PRO_30D_99R)">
+              </div>
+              <button id="rechargeBtn" class="btn btn-primary">
+                <span>🔓</span> 立即激活
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">💳</div>
+              <div>
+                <h3>订单记录</h3>
+                <span>Order History</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="orderHistory" class="history-list"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🎯</div>
+              <div>
+                <h3>企业定制服务</h3>
+                <span>Enterprise Customization</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="text-muted" style="margin-bottom: 20px;">
+              我们提供面向企业的定制化微表情识别解决方案，适用于医疗、司法、教育等多个行业场景。
+            </p>
+            <form id="customTrainingForm">
+              <div class="form-group">
+                <label class="form-label">行业场景</label>
+                <input type="text" id="industryInput" class="form-input" placeholder="教育 / 医疗 / 司法" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">需求描述</label>
+                <textarea id="customDescription" class="form-textarea" rows="4" placeholder="请描述目标人群、识别目标和应用场景"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <span>📩</span> 提交定制需求
+              </button>
+            </form>
+            <div id="customPanel" class="result-panel" style="margin-top: 16px;">
+              提交后将生成商务跟进记录，我们的顾问将在24小时内与您联系。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🔑</div>
+              <div>
+                <h3>API 密钥管理</h3>
+                <span>API Key Management</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="inline-actions" style="flex-direction: column; gap: 12px;">
+              <button id="generateApiKeyBtn" class="btn btn-primary" style="width: 100%;">
+                <span>🔑</span> 生成 API 密钥
+              </button>
+              <button id="viewApiKeysBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>👁️</span> 查看 API 密钥
+              </button>
+              <button id="apiUsageBtn" class="btn btn-secondary" style="width: 100%;">
+                <span>📊</span> API 使用统计
+              </button>
+            </div>
+            <div id="apiPanel" class="result-panel" style="margin-top: 16px;">
+              企业用户可以生成 API 密钥，将微表情识别功能集成到自己的系统中。
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🏢</div>
+              <div>
+                <h3>企业管理后台</h3>
+                <span>Enterprise Admin</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body" id="adminSection">
+            <div id="adminStats" class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px;"></div>
+            <div style="margin-bottom: 20px;">
+              <h4 style="margin-bottom: 12px; color: var(--text-primary);">系统审计日志</h4>
+              <div id="audit-log-list" class="history-list" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
+            <div>
+              <h4 style="margin-bottom: 12px; color: var(--text-primary);">商业定制申请</h4>
+              <div id="leadList" class="history-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 智能情绪健康与压力临床测评系统. All Rights Reserved.</p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+        本系统仅用于研究与演示。任何基于本系统的分析结果均不构成医疗建议。如有心理困扰，请咨询持证医生。
+      </p>
+    </footer>
+  </div>
+
+  <div id="paymentModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">购买会员套餐</h3>
+        <button class="modal-close" onclick="closePaymentModal()">×</button>
+      </div>
+      <div class="card-body">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <p style="margin-bottom: 8px;">套餐名称: <strong id="payPlanName">-</strong></p>
+          <p style="font-size: 24px; font-weight: bold; color: var(--accent-primary);">
+            ¥<span id="payPlanAmount">-</span>
+          </p>
+        </div>
+        <div class="qr-section" style="text-align: center; margin: 24px 0;">
+          <div style="width: 160px; height: 160px; margin: 0 auto; background: white; border-radius: 12px; padding: 10px;">
+            <img src="../qr_placeholder.png" alt="QR Code" style="width: 100%;">
+          </div>
+          <p class="text-muted" style="margin-top: 12px; font-size: 13px;">请使用微信或支付宝扫描二维码支付</p>
+        </div>
+        <div class="inline-actions" style="flex-direction: column; gap: 12px;">
+          <button id="simulatePayBtn" class="btn btn-primary" style="width: 100%;">
+            模拟支付完成 (演示)
+          </button>
+          <button class="btn btn-ghost" onclick="closePaymentModal()">取消</button>
+        </div>
+        <p class="text-center text-muted" style="font-size: 11px; margin-top: 16px;">
+          * 演示系统，实际支付功能请联系管理员
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      await bootstrap();
+      setupRecharge();
+      setupPaymentModal();
+      setupApiKeys();
+      setupCustomTraining();
+    });
+
+    async function bootstrap() {
+      try {
+        await loadUserOverview();
+        if (AppState.token) {
+          await loadMembershipData();
+        }
+      } catch (error) {
+        console.error("Bootstrap error:", error);
+      }
+    }
+
+    async function loadMembershipData() {
+      try {
+        await loadPlans();
+        await loadOrders();
+
+        if (AppState.currentUser) {
+          document.querySelectorAll(".membership-tier").forEach(el => {
+            el.textContent = AppState.currentUser.membership_tier || "Free";
+          });
+          document.querySelectorAll(".report-credits").forEach(el => {
+            el.textContent = AppState.currentUser.report_credits || 0;
+          });
+          document.getElementById("recognitionCount").textContent = AppState.currentUser.recognition_count || 0;
+        }
+
+        loadAdminWorkspace();
+      } catch (error) {
+        console.error("Failed to load membership data:", error);
+      }
+    }
+
+    async function loadPlans() {
+      try {
+        const plans = await request("/api/membership/plans", { method: "GET" });
+        renderPlansGrid(document.getElementById("plansGrid"), plans);
+      } catch (error) {
+        console.error("Failed to load plans:", error);
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const dashboard = await request("/api/dashboard/overview", { method: "GET" });
+        renderHistoryList(document.getElementById("orderHistory"), dashboard.recent_orders || []);
+      } catch (error) {
+        console.error("Failed to load orders:", error);
+      }
+    }
+
+    function setupRecharge() {
+      const rechargeBtn = document.getElementById("rechargeBtn");
+      rechargeBtn?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        const code = document.getElementById("rechargeInput").value.trim();
+        if (!code) {
+          showToast("请输入激活密钥", "warning");
+          return;
+        }
+
+        showLoading(this, "激活中...");
+        try {
+          const result = await request("/api/membership/recharge", {
+            method: "POST",
+            body: JSON.stringify({ code })
+          });
+          showToast(result.message || "激活成功！", "success");
+          document.getElementById("rechargeInput").value = "";
+          await loadMembershipData();
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function setupPaymentModal() {
+      const simulatePayBtn = document.getElementById("simulatePayBtn");
+      simulatePayBtn?.addEventListener("click", async function() {
+        if (!AppState.pendingPlan) return;
+
+        showLoading(this, "支付中...");
+        try {
+          const result = await request("/api/membership/purchase", {
+            method: "POST",
+            body: JSON.stringify({ plan_name: AppState.pendingPlan })
+          });
+          showToast(result.message || "支付成功！", "success");
+          closePaymentModal();
+          AppState.pendingPlan = null;
+          await loadMembershipData();
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function closePaymentModal() {
+      document.getElementById("paymentModal").classList.remove("active");
+    }
+
+    function setupApiKeys() {
+      document.getElementById("generateApiKeyBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "生成中...");
+        try {
+          const result = await request("/api/api-keys/generate", { method: "POST" });
+          document.getElementById("apiPanel").innerHTML = `
+            <p><strong>API 密钥：</strong></p>
+            <p style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; word-break: break-all;">
+              ${result.api_key}
+            </p>
+            <p class="text-muted" style="font-size: 12px; margin-top: 8px;">请妥善保存密钥，不要泄露给他人</p>
+          `;
+          showToast("API密钥生成成功", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+
+      document.getElementById("viewApiKeysBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "加载中...");
+        try {
+          const keys = await request("/api/api-keys", { method: "GET" });
+          if (!keys || keys.length === 0) {
+            document.getElementById("apiPanel").innerHTML = '<p class="text-muted">暂无API密钥，请生成新的API密钥</p>';
+          } else {
+            document.getElementById("apiPanel").innerHTML = keys.map(key => `
+              <div style="margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <p><strong>密钥 ID：</strong>${key.id}</p>
+                <p style="font-size: 12px;"><strong>创建时间：</strong>${key.created_at}</p>
+              </div>
+            `).join("");
+          }
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+
+      document.getElementById("apiUsageBtn")?.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "加载中...");
+        try {
+          const usage = await request("/api/api-usage", { method: "GET" });
+          document.getElementById("apiPanel").innerHTML = `
+            <p><strong>总调用次数：</strong>${usage.total_calls || 0}</p>
+            <p><strong>成功次数：</strong>${usage.success_calls || 0}</p>
+            <p><strong>失败次数：</strong>${usage.error_calls || 0}</p>
+          `;
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function setupCustomTraining() {
+      const form = document.getElementById("customTrainingForm");
+      form?.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        showLoading(submitBtn, "提交中...");
+
+        try {
+          const industry = document.getElementById("industryInput").value.trim();
+          const description = document.getElementById("customDescription").value.trim();
+
+          const result = await request("/api/custom-training/request", {
+            method: "POST",
+            body: JSON.stringify({ industry, description })
+          });
+
+          document.getElementById("customPanel").innerHTML = `
+            <p style="color: var(--success);"><strong>✓ 提交成功</strong></p>
+            <p><strong>需求编号：</strong>${result.request?.id || "-"}</p>
+            <p><strong>行业：</strong>${industry}</p>
+            <p><strong>状态：</strong>${result.request?.status || "待处理"}</p>
+          `;
+
+          showToast("定制需求已提交", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(submitBtn);
+        }
+      });
+    }
+
+    async function loadAdminWorkspace() {
+      if (!AppState.currentUser?.can_manage_leads) {
+        document.getElementById("adminSection").style.display = "none";
+        return;
+      }
+
+      try {
+        const [overview, leads, auditLogs] = await Promise.all([
+          request("/api/admin/overview", { method: "GET" }),
+          request("/api/admin/leads", { method: "GET" }),
+          request("/api/admin/audit-logs", { method: "GET" })
+        ]);
+
+        document.getElementById("adminStats").innerHTML = `
+          <div class="stat-card">
+            <div class="stat-label">总用户数</div>
+            <div class="stat-value">${overview.total_users || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">付费订单</div>
+            <div class="stat-value">${overview.paid_orders || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">累计营收</div>
+            <div class="stat-value accent">¥${overview.total_revenue || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">待处理线索</div>
+            <div class="stat-value">${overview.pending_leads || 0}</div>
+          </div>
+        `;
+
+        renderHistoryList(document.getElementById("leadList"), leads || []);
+        renderHistoryList(document.getElementById("audit-log-list"), auditLogs || []);
+      } catch (error) {
+        console.error("Failed to load admin workspace:", error);
+      }
+    }
+
+    function confirmLogout() {
+      if (confirm("确定要退出登录吗？")) {
+        logout();
+        window.location.href = "../index.html";
+      }
+    }
+
+    window.closePaymentModal = closePaymentModal;
+    window.confirmLogout = confirmLogout;
+  </script>
+</body>
+</html>

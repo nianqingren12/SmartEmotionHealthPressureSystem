@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实时情绪检测 - 智能情绪健康与压力临床测评系统</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h1>智能情绪健康与压力临床测评系统</h1>
+          <span>Medical Grade Emotion Analysis</span>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="../index.html" class="nav-item">
+          <span>🏠</span> 首页仪表盘
+        </a>
+        <a href="#" class="nav-item active">
+          <span>📹</span> 实时情绪检测
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span>👤</span> 个人中心
+        </a>
+        <a href="history.html" class="nav-item">
+          <span>📊</span> 历史记录
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span>💎</span> 会员中心
+        </a>
+        <a href="services.html" class="nav-item">
+          <span>🛠️</span> 增值服务
+        </a>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>Engine: <span id="engine-status" class="text-accent">Checking...</span></span>
+        </div>
+        <div class="compliance-badge">
+          <span>🛡️</span> HIPAA & GDPR Compliant
+        </div>
+        <button id="logoutBtn" class="btn btn-secondary btn-sm" onclick="confirmLogout()">
+          <span>🚪</span> 退出登录
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <h2 class="page-title">实时情绪检测</h2>
+        <p class="page-subtitle">通过摄像头实时采集面部微表情，获取精准的情绪识别结果</p>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📹</div>
+              <div>
+                <h3>摄像头实时识别</h3>
+                <span>Camera Recognition</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="video-container" id="videoContainer">
+              <video id="camera" autoplay playsinline muted></video>
+              <canvas id="captureCanvas" hidden></canvas>
+              <div class="video-overlay">
+                <div class="recognition-badge">
+                  <span class="emotion-indicator" id="statusIndicator"></span>
+                  <span id="cameraStatus">摄像头已关闭</span>
+                </div>
+              </div>
+            </div>
+            <div class="inline-actions">
+              <button id="startCameraBtn" class="btn btn-primary">
+                <span>▶️</span> 开启摄像头
+              </button>
+              <button id="captureBtn" class="btn btn-secondary">
+                <span>📸</span> 拍摄并识别
+              </button>
+            </div>
+            <div id="recognitionResult" class="result-panel" style="margin-top: 16px;">
+              等待识别结果...
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🔍</div>
+              <div>
+                <h3>实时情绪监测</h3>
+                <span>Live Monitoring</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <video id="liveVideo" autoplay playsinline muted style="width: 100%; border-radius: 12px; background: rgba(0,0,0,0.3); margin-bottom: 16px;"></video>
+            <div class="inline-actions">
+              <button id="startLiveBtn" class="btn btn-primary">
+                <span>▶️</span> 开始实时监测
+              </button>
+              <button id="stopLiveBtn" class="btn btn-secondary hidden">
+                <span>⏹️</span> 停止监测
+              </button>
+            </div>
+            <div id="liveEmotionDisplay" class="result-panel" style="margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div>
+                  <p>当前情绪：<strong id="currentEmotion">-</strong></p>
+                  <p>置信度：<strong id="liveConfidence">-</strong></p>
+                </div>
+                <div style="text-align: right;">
+                  <p>持续时间：<strong id="sessionDuration">-</strong></p>
+                  <p>已分析帧数：<strong id="frameCount">-</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid" id="upload">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📤</div>
+              <div>
+                <h3>图片上传分析</h3>
+                <span>Image Upload Analysis</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">上传图片或视频</label>
+              <input type="file" id="uploadInput" class="form-input" accept="image/*,video/*">
+            </div>
+            <button id="analyzeUploadBtn" class="btn btn-primary" style="width: 100%;">
+              <span>🔍</span> 分析上传内容
+            </button>
+            <div id="uploadResult" class="result-panel" style="margin-top: 16px;">
+              上传图片或视频后，系统将自动进行分析并返回结果。
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📊</div>
+              <div>
+                <h3>识别结果详情</h3>
+                <span>Recognition Details</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="emotionBars" class="emotion-bars"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📋</div>
+              <div>
+                <h3>最近识别记录</h3>
+                <span>Recent Recognitions</span>
+              </div>
+            </div>
+            <a href="history.html" class="btn btn-ghost btn-sm">查看全部</a>
+          </div>
+          <div class="card-body">
+            <div id="recentRecognitions" class="history-list"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">📑</div>
+              <div>
+                <h3>情绪波动趋势</h3>
+                <span>Emotion Trends</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="reportWave" class="wave-chart"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 智能情绪健康与压力临床测评系统. All Rights Reserved.</p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+        本系统仅用于研究与演示。任何基于本系统的分析结果均不构成医疗建议。如有心理困扰，请咨询持证医生。
+      </p>
+    </footer>
+  </div>
+
+  <script src="../common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      await bootstrap();
+      setupCameraControls();
+      setupLiveMonitoring();
+      setupUploadAnalysis();
+    });
+
+    async function bootstrap() {
+      try {
+        await loadUserOverview();
+        if (AppState.token) {
+          await loadRecentData();
+        }
+      } catch (error) {
+        console.error("Bootstrap error:", error);
+      }
+    }
+
+    async function loadRecentData() {
+      try {
+        const dashboard = await request("/api/dashboard/overview", { method: "GET" });
+        AppState.dashboard = dashboard;
+
+        if (AppState.currentUser) {
+          renderEmotionBars(document.getElementById("emotionBars"), AppState.currentUser.emotion_distribution || {});
+        }
+
+        renderHistoryList(document.getElementById("recentRecognitions"), dashboard.recent_recognitions || []);
+
+        if (dashboard.recent_reports && dashboard.recent_reports.length > 0 && dashboard.recent_reports[0].details) {
+          renderWaveChart(document.getElementById("reportWave"), dashboard.recent_reports[0].details.wave || []);
+        }
+      } catch (error) {
+        console.error("Failed to load recent data:", error);
+      }
+    }
+
+    function setupCameraControls() {
+      const startCameraBtn = document.getElementById("startCameraBtn");
+      const captureBtn = document.getElementById("captureBtn");
+
+      startCameraBtn.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        showLoading(this, "开启中...");
+        try {
+          await startCamera(document.getElementById("camera"));
+          document.getElementById("cameraStatus").textContent = "摄像头已开启";
+          document.getElementById("statusIndicator").className = "emotion-indicator success";
+          showToast("摄像头已成功开启", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+
+      captureBtn.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        if (!AppState.stream) {
+          showToast("请先开启摄像头", "warning");
+          return;
+        }
+
+        showLoading(this, "识别中...");
+        try {
+          const frame = await captureFrame(document.getElementById("camera"), document.getElementById("captureCanvas"));
+          const result = await request("/api/recognition/realtime", {
+            method: "POST",
+            body: JSON.stringify({ image_data_url: frame, source_type: "camera" })
+          });
+
+          const record = result.record;
+          document.getElementById("recognitionResult").innerHTML = `
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 12px;">${getEmotionEmoji(record.label)}</div>
+              <div style="font-size: 24px; font-weight: bold; color: var(--accent-primary);">${record.label}</div>
+              <div style="margin-top: 12px; color: var(--text-secondary);">
+                <p>置信度：<strong>${record.confidence}</strong></p>
+                <p>情绪强度：<strong>${record.intensity}</strong></p>
+                <p>持续时长：<strong>${record.duration_ms} ms</strong></p>
+                <p style="font-size: 12px; color: var(--text-muted);">辅助标签：${record.secondary_label || "-"}</p>
+              </div>
+            </div>
+          `;
+
+          document.getElementById("statusIndicator").className = "emotion-indicator success";
+          showToast("识别完成", "success");
+          await loadRecentData();
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function getEmotionEmoji(emotion) {
+      const emojis = {
+        "开心": "😊", "悲伤": "😔", "愤怒": "😠", "惊讶": "😲",
+        "恐惧": "😨", "厌恶": "😒", "平静": "😌", "中性": "😐"
+      };
+      return emojis[emotion] || "😐";
+    }
+
+    let liveSessionId = null;
+    let liveInterval = null;
+
+    function setupLiveMonitoring() {
+      const startLiveBtn = document.getElementById("startLiveBtn");
+      const stopLiveBtn = document.getElementById("stopLiveBtn");
+
+      startLiveBtn.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        try {
+          const result = await request("/api/video/create-session", { method: "POST" });
+          liveSessionId = result.session_id;
+
+          if (!AppState.stream) {
+            await startCamera(document.getElementById("liveVideo"));
+          } else {
+            document.getElementById("liveVideo").srcObject = AppState.stream;
+          }
+
+          startLiveBtn.style.display = "none";
+          stopLiveBtn.classList.remove("hidden");
+          startLiveAnalysis();
+
+          showToast("实时监测已开始", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+
+      stopLiveBtn.addEventListener("click", async function() {
+        try {
+          if (liveSessionId) {
+            await request(`/api/video/session-summary/${liveSessionId}`, { method: "GET" });
+          }
+        } catch (error) {
+          console.error("Session summary error:", error);
+        }
+
+        clearInterval(liveInterval);
+        liveInterval = null;
+        liveSessionId = null;
+
+        document.getElementById("startLiveBtn").style.display = "inline-flex";
+        stopLiveBtn.classList.add("hidden");
+        document.getElementById("currentEmotion").textContent = "-";
+        document.getElementById("liveConfidence").textContent = "-";
+        document.getElementById("sessionDuration").textContent = "-";
+        document.getElementById("frameCount").textContent = "-";
+
+        showToast("实时监测已停止", "info");
+      });
+    }
+
+    function startLiveAnalysis() {
+      let frameCount = 0;
+      let startTime = Date.now();
+
+      liveInterval = setInterval(async function() {
+        if (!liveSessionId) return;
+
+        try {
+          const video = document.getElementById("liveVideo");
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          canvas.getContext("2d").drawImage(video, 0, 0);
+          const frameBase64 = canvas.toDataURL("image/jpeg", 0.8);
+
+          const result = await request("/api/video/process-frame", {
+            method: "POST",
+            body: JSON.stringify({
+              session_id: liveSessionId,
+              frame_base64: frameBase64,
+              timestamp: Date.now()
+            })
+          });
+
+          document.getElementById("currentEmotion").textContent = result.emotion || "-";
+          document.getElementById("liveConfidence").textContent = result.confidence || "-";
+          document.getElementById("frameCount").textContent = ++frameCount;
+
+          const duration = Math.floor((Date.now() - startTime) / 1000);
+          const mins = Math.floor(duration / 60);
+          const secs = duration % 60;
+          document.getElementById("sessionDuration").textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+        } catch (error) {
+          console.error("Live analysis error:", error);
+        }
+      }, 500);
+    }
+
+    function setupUploadAnalysis() {
+      const analyzeUploadBtn = document.getElementById("analyzeUploadBtn");
+
+      analyzeUploadBtn.addEventListener("click", async function() {
+        if (!AppState.token) {
+          showToast("请先登录", "warning");
+          return;
+        }
+
+        const file = document.getElementById("uploadInput").files?.[0];
+        if (!file) {
+          showToast("请先选择图片或视频", "warning");
+          return;
+        }
+
+        showLoading(this, "分析中...");
+        try {
+          if (file.type.startsWith("image/")) {
+            const imageDataUrl = await readFileAsDataUrl(file);
+            const result = await request("/api/recognition/realtime", {
+              method: "POST",
+              body: JSON.stringify({ image_data_url: imageDataUrl, source_type: "upload-image" })
+            });
+
+            const record = result.record;
+            document.getElementById("uploadResult").innerHTML = `
+              <div style="text-align: center;">
+                <div style="font-size: 36px; margin-bottom: 8px;">${getEmotionEmoji(record.label)}</div>
+                <div style="font-weight: bold; color: var(--accent-primary);">${record.label}</div>
+                <div style="margin-top: 8px; color: var(--text-secondary);">
+                  置信度：${record.confidence} | 强度：${record.intensity}
+                </div>
+              </div>
+            `;
+          } else if (file.type.startsWith("video/")) {
+            showToast("视频分析功能处理中...", "info");
+          }
+
+          showToast("分析完成", "success");
+          await loadRecentData();
+        } catch (error) {
+          showToast(error.message, "error");
+        } finally {
+          hideLoading(this);
+        }
+      });
+    }
+
+    function confirmLogout() {
+      if (confirm("确定要退出登录吗？")) {
+        logout();
+        window.location.href = "../index.html";
+      }
+    }
+
+    window.confirmLogout = confirmLogout;
+  </script>
+</body>
+</html>

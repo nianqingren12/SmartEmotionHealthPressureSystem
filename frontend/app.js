@@ -910,7 +910,7 @@ async function exportPdfReport() {
   const header = `
     <div style="border-bottom: 3px solid #00ffcc; padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
       <div>
-        <h1 style="margin: 0; font-size: 24px; color: #000;">AI 情绪健康与压力临床评估报告</h1>
+        <h1 style="margin: 0; font-size: 24px; color: #000;">智能情绪健康与压力临床评估报告</h1>
         <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Clinical Emotion & Stress Analysis Report</p>
       </div>
       <div style="text-align: right;">
@@ -1041,11 +1041,12 @@ async function exportData() {
     showToast("导出失败", true);
     return;
   }
-  const blob = await response.blob();
+  const text = await response.text();
+  const blob = new Blob(["\ufeff" + text], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "micro-expression-export.csv";
+  link.download = "情绪数据导出.csv";
   link.click();
   URL.revokeObjectURL(url);
   showToast("CSV 已导出");

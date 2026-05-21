@@ -1,0 +1,446 @@
+<section class="hero glass-card">
+  <div>
+    <p class="eyebrow">竞赛展示 + 商业落地</p>
+    <h2>高端网页端、实时识别、会员变现、B 端服务一体化原型</h2>
+    <p class="hero-text">
+      当前版本已实现注册登录、摄像头实时采集、识别记录、情绪报告、职场测评、会员购买、数据导出、定制训练申请与课程推荐。
+    </p>
+    <div class="hero-tags">
+      <span>实时识别</span>
+      <span>情绪报告</span>
+      <span>职场测评</span>
+      <span>情感陪伴</span>
+      <span>商业化闭环</span>
+    </div>
+  </div>
+  <div class="hero-highlight">
+    <div class="metric-card">
+      <span>目标人群</span>
+      <strong>C 端用户 / 企业客户</strong>
+    </div>
+    <div class="metric-card">
+      <span>部署形态</span>
+      <strong>FastAPI + 原生 Web</strong>
+    </div>
+    <div class="metric-card">
+      <span>模型形态</span>
+      <strong>演示引擎 + ONNX 预留位</strong>
+    </div>
+  </div>
+</section>
+
+<section class="grid">
+  <article class="glass-card auth-card">
+    <div class="section-title">
+      <p class="eyebrow">Access</p>
+      <h3>注册 / 登录</h3>
+    </div>
+    <div class="auth-tabs">
+      <button class="tab-btn active" data-mode="login">登录</button>
+      <button class="tab-btn" data-mode="register">注册</button>
+    </div>
+    <form id="authForm" class="stack-form">
+      <label>
+        <span>邮箱</span>
+        <input id="emailInput" type="email" placeholder="founder@brand.ai" required />
+      </label>
+      <label>
+        <span>密码</span>
+        <input id="passwordInput" type="password" placeholder="请输入至少 6 位密码" required />
+      </label>
+      <button type="submit" class="primary-btn">立即进入系统</button>
+    </form>
+    <button id="forgotPasswordBtn" class="link-btn">忘记密码</button>
+    <div class="auth-status">
+      <span id="authStatus">未登录</span>
+      <span id="authUserMeta">请先注册或登录后体验完整功能。</span>
+    </div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Overview</p>
+      <h3>个人中心</h3>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box health-assessment" style="grid-column: span 2; background: linear-gradient(135deg, rgba(0,102,255,0.1), rgba(0,255,204,0.1)); border: 1px solid rgba(0,255,204,0.3); padding: 20px; border-radius: 12px; min-width: 450px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">临床级心理健康评估报告 (Clinical Assessment)</h3>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span id="calibration-status-badge" style="font-size: 0.7rem; color: #888; border: 1px solid #444; padding: 2px 6px; border-radius: 4px;">未校准</span>
+              <span id="clinical-id" style="font-family: monospace; font-size: 0.7rem; color: #00ffcc; background: rgba(0,255,204,0.1); padding: 2px 8px; border-radius: 4px;">ID: --</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 30px; margin-top: 15px;">
+            <div class="metrics-column" style="flex: 1.2;">
+              <p style="margin: 8px 0; color: #ccc;">感知压力 (PSS): <span id="stress-index" style="font-weight: bold; color: #fff;">--</span>%</p>
+              <p style="margin: 8px 0; color: #ccc;">心率变异性 (HRV): <span id="hrv-value" style="color: #fff;">--</span> ms (<span id="hrv-status" style="font-size: 0.8rem; color: #00ffcc;">--</span>)</p>
+              <p style="margin: 8px 0; color: #ccc;">瞬目频率 (Blink): <span id="blink-rate" style="color: #fff;">--</span> 次/分 (<span id="blink-status" style="font-size: 0.8rem; color: #00ffcc;">--</span>)</p>
+            </div>
+            <div class="metrics-column" style="flex: 1; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+              <p style="margin: 8px 0; color: #ccc;">认知专注度: <span id="focus-score" style="color: #fff;">--</span>%</p>
+              <p style="margin: 8px 0; color: #ccc;">风险等级: <br><span id="risk-level" style="font-weight: bold; font-size: 1.2rem; color: #00ffcc; display: block; margin-top: 5px;">--</span></p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button onclick="runHealthAssessment()" class="ghost-btn" style="background: #00ffcc; color: #000; border: none; flex: 1; font-weight: bold; height: 38px; cursor: pointer;">更新评估</button>
+            <button onclick="openCalibrationModal()" class="ghost-btn" style="border: 1px solid #00ffcc; color: #00ffcc; flex: 1; height: 38px; cursor: pointer;">基准校准</button>
+          </div>
+          
+          <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #00ffcc;">
+            <p id="health-advice" style="font-size: 0.85rem; color: #eee; margin: 0; line-height: 1.5;"></p>
+          </div>
+          
+          <p style="font-size: 0.65rem; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+            * Medical Standard: PSS-10 | HRV rPPG-Sim | Data Encrypted (AES-256)
+          </p>
+        </div>
+      <div class="stat-box">
+        <span>会员等级</span>
+        <strong id="membershipTier">Free</strong>
+      </div>
+      <div class="stat-box">
+        <span>剩余报告次数</span>
+        <strong id="reportCredits">0</strong>
+      </div>
+      <div class="stat-box">
+        <span>识别次数</span>
+        <strong id="recognitionCount">0</strong>
+      </div>
+      <div class="stat-box">
+        <span>主导情绪</span>
+        <strong id="dominantEmotion">平静</strong>
+      </div>
+    </div>
+    <div id="emotionBars" class="emotion-bars"></div>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="glass-card camera-card">
+    <div class="section-title">
+      <p class="eyebrow">Realtime</p>
+      <h3>实时微表情识别</h3>
+    </div>
+    <video id="camera" autoplay playsinline muted></video>
+    <canvas id="captureCanvas" hidden></canvas>
+    <div class="inline-actions">
+      <button id="startCameraBtn" class="primary-btn">开启摄像头</button>
+      <button id="captureBtn" class="ghost-btn">拍摄并识别</button>
+    </div>
+    <div class="stack-form upload-block">
+      <label>
+        <span>上传图片或视频进行离线分析</span>
+        <input id="uploadInput" type="file" accept="image/*,video/*" />
+      </label>
+      <button id="analyzeUploadBtn" class="ghost-btn">分析上传内容</button>
+    </div>
+    <div id="recognitionResult" class="result-panel">
+      <p>等待识别结果...</p>
+    </div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <p class="eyebrow">Insight</p>
+        <h3>报告与测评</h3>
+      </div>
+      <button id="exportPdfBtn" class="ghost-btn hidden">导出 PDF 报告</button>
+    </div>
+    <div class="stack-form">
+      <button id="generateReportBtn" class="primary-btn">生成情绪深度分析报告</button>
+      <label>
+        <span>职场测评场景</span>
+        <select id="workplaceScenario">
+          <option value="模拟面试">模拟面试</option>
+          <option value="商务谈判">商务谈判</option>
+          <option value="项目汇报">项目汇报</option>
+        </select>
+      </label>
+      <button id="runAssessmentBtn" class="ghost-btn">执行职场微表情测评</button>
+    </div>
+    <div id="reportPanel" class="result-panel">
+      <p>报告与测评结果将展示在这里。</p>
+    </div>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">History</p>
+      <h3>最近识别</h3>
+    </div>
+    <div id="recentRecognitions" class="history-list"></div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Reports</p>
+      <h3>最近报告与趋势</h3>
+    </div>
+    <div id="recentReports" class="history-list"></div>
+    <div id="reportWave" class="wave-chart"></div>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Orders</p>
+      <h3>订单记录</h3>
+    </div>
+    <div id="orderHistory" class="history-list"></div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Companion</p>
+      <h3>情感陪伴互动</h3>
+    </div>
+    <div class="stack-form">
+      <label>
+        <span>当前情绪</span>
+        <select id="emotionSelect">
+          <option>开心</option>
+          <option>悲伤</option>
+          <option>愤怒</option>
+          <option>惊讶</option>
+          <option>恐惧</option>
+          <option>厌恶</option>
+          <option selected>平静</option>
+        </select>
+      </label>
+      <button id="companionBtn" class="primary-btn">获取互动回应</button>
+    </div>
+    <div id="companionPanel" class="result-panel">
+      <p>系统会根据你的实时状态生成互动文案。</p>
+    </div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Export</p>
+      <h3>数据导出与广告推荐</h3>
+    </div>
+    <div class="inline-actions">
+      <button id="exportBtn" class="primary-btn">导出 CSV 数据</button>
+      <button id="adsBtn" class="ghost-btn">获取广告推荐</button>
+    </div>
+    <div id="adsPanel" class="result-panel">
+      <p>这里会展示情绪驱动的广告投放建议。</p>
+    </div>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Analytics</p>
+      <h3>用户行为分析</h3>
+    </div>
+    <div class="inline-actions">
+      <button id="behaviorAnalysisBtn" class="primary-btn">行为分析</button>
+      <button id="emotionAnalysisBtn" class="ghost-btn">情绪分析</button>
+    </div>
+    <div id="analyticsPanel" class="result-panel">
+      <p>点击按钮查看详细的用户行为和情绪分析。</p>
+    </div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">API Management</p>
+      <h3>企业API管理</h3>
+    </div>
+    <div class="stack-form">
+      <button id="generateApiKeyBtn" class="primary-btn">生成API密钥</button>
+      <button id="viewApiKeysBtn" class="ghost-btn">查看API密钥</button>
+      <button id="apiUsageBtn" class="ghost-btn">API使用统计</button>
+    </div>
+    <div id="apiPanel" class="result-panel">
+      <p>企业用户可以生成API密钥，集成微表情识别功能到自己的系统中。</p>
+    </div>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Membership</p>
+      <h3>会员体系</h3>
+    </div>
+    <div id="plansGrid" class="plans-grid"></div>
+    <div class="stack-form recharge-block" style="margin-top: 24px; border-top: 1px solid var(--panel-border); padding-top: 20px;">
+      <label>
+        <span>使用激活码/密钥充值</span>
+        <input id="rechargeInput" type="text" placeholder="请输入充值密钥 (如: PRO_30D_99R)" />
+      </label>
+      <button id="rechargeBtn" class="ghost-btn">立即激活</button>
+    </div>
+  </article>
+
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Custom</p>
+      <h3>自定义场景训练</h3>
+    </div>
+    <form id="customTrainingForm" class="stack-form">
+      <label>
+        <span>行业场景</span>
+        <input id="industryInput" type="text" placeholder="教育 / 医疗 / 司法" required />
+      </label>
+      <label>
+        <span>需求描述</span>
+        <textarea id="customDescription" rows="4" placeholder="请描述目标人群、识别目标和应用场景"></textarea>
+      </label>
+      <button type="submit" class="primary-btn">提交定制需求</button>
+    </form>
+    <div id="customPanel" class="result-panel">
+      <p>提交后将生成商务跟进记录。</p>
+    </div>
+  </article>
+</section>
+
+<section id="adminSection" class="glass-card hidden">
+  <div class="section-title">
+    <p class="eyebrow">Enterprise</p>
+    <h3>企业工作台</h3>
+  </div>
+  <div id="adminStats" class="stats-grid"></div>
+  <div class="admin-grid">
+    <div class="stat-box">
+      <h3>系统审计日志 (Audit Logs)</h3>
+      <div id="audit-log-list" style="font-size: 0.8rem; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 4px; padding: 10px;">
+        加载中...
+      </div>
+    </div>
+    <div class="stat-box">
+      <h3>商业定制申请</h3>
+      <div id="leadList" class="history-list"></div>
+    </div>
+  </div>
+</section>
+
+<section class="glass-card">
+  <div class="section-title">
+    <p class="eyebrow">Value Added</p>
+    <h3>课程与咨询服务</h3>
+  </div>
+  <div id="courseGrid" class="course-grid"></div>
+</section>
+
+<!-- 心理评估模块 -->
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Assessment</p>
+      <h3>心理评估量表</h3>
+    </div>
+    <div class="inline-actions">
+      <button id="sasBtn" class="primary-btn">焦虑自评量表 (SAS)</button>
+      <button id="sdsBtn" class="ghost-btn">抑郁自评量表 (SDS)</button>
+      <button id="pssBtn" class="ghost-btn">压力知觉量表 (PSS)</button>
+    </div>
+    <div id="assessmentPanel" class="result-panel">
+      <p>选择一个量表开始评估，了解您的心理健康状况。</p>
+    </div>
+  </article>
+
+  <!-- 视频流实时分析 -->
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Live Stream</p>
+      <h3>实时情绪监测</h3>
+    </div>
+    <video id="liveVideo" autoplay playsinline muted width="100%"></video>
+    <canvas id="captureCanvas" hidden></canvas>
+    <div class="inline-actions">
+      <button id="startLiveBtn" class="primary-btn">开始实时监测</button>
+      <button id="stopLiveBtn" class="ghost-btn">停止监测</button>
+    </div>
+    <div id="liveEmotionDisplay" class="result-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <p>当前情绪：<strong id="currentEmotion">-</strong></p>
+          <p>置信度：<strong id="liveConfidence">-</strong></p>
+        </div>
+        <div style="text-align: right;">
+          <p>持续时间：<strong id="sessionDuration">-</strong></p>
+          <p>已分析帧数：<strong id="frameCount">-</strong></p>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- 生理指标与健康监测 -->
+<section class="grid">
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Biometrics</p>
+      <h3>生理指标监测</h3>
+    </div>
+    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 15px;">
+      <div class="stat-box" style="background: rgba(255,100,100,0.1); border-color: rgba(255,100,100,0.3);">
+        <span>心率 (HR)</span>
+        <strong id="heartRate">-</strong>
+        <span style="font-size: 0.7rem; color: #888;">bpm</span>
+      </div>
+      <div class="stat-box" style="background: rgba(100,200,255,0.1); border-color: rgba(100,200,255,0.3);">
+        <span>心率变异性 (HRV)</span>
+        <strong id="hrv">-</strong>
+        <span style="font-size: 0.7rem; color: #888;">ms</span>
+      </div>
+      <div class="stat-box" style="background: rgba(100,255,150,0.1); border-color: rgba(100,255,150,0.3);">
+        <span>呼吸率</span>
+        <strong id="breathRate">-</strong>
+        <span style="font-size: 0.7rem; color: #888;">次/分</span>
+      </div>
+      <div class="stat-box" style="background: rgba(255,200,100,0.1); border-color: rgba(255,200,100,0.3);">
+        <span>压力水平</span>
+        <strong id="stressLevel">-</strong>
+        <span style="font-size: 0.7rem; color: #888;">%</span>
+      </div>
+    </div>
+    <div id="biometricAdvice" class="result-panel" style="margin-top: 15px;">
+      <p>生理指标分析建议将显示在这里。</p>
+    </div>
+  </article>
+
+  <!-- 情绪日记 -->
+  <article class="glass-card">
+    <div class="section-title">
+      <p class="eyebrow">Diary</p>
+      <h3>情绪日记</h3>
+    </div>
+    <div class="stack-form">
+      <label>
+        <span>今日心情</span>
+        <select id="moodSelect">
+          <option value="5">😊 非常开心</option>
+          <option value="4">🙂 开心</option>
+          <option value="3">😐 一般</option>
+          <option value="2">😔 低落</option>
+          <option value="1">😢 非常低落</option>
+        </select>
+      </label>
+      <label>
+        <span>心情描述</span>
+        <textarea id="moodNote" rows="3" placeholder="记录今天的心情和感受..."></textarea>
+      </label>
+      <button id="saveMoodBtn" class="primary-btn">保存心情记录</button>
+    </div>
+    <div id="moodCalendar" style="margin-top: 15px;">
+      <!-- Mood Calendar will be rendered here -->
+    </div>
+  </article>
+</section>
+
+<footer>
+  <p>&copy; 2026 智能情绪健康与压力临床测评系统. All Rights Reserved. (Medical Prototype)</p>
+  <p style="font-size: 0.7rem; color: #666; margin-top: 5px;">本系统仅用于研究与演示。任何基于本系统的分析结果均不构成医疗建议。如有心理困扰，请咨询持证医生。</p>
+</footer>

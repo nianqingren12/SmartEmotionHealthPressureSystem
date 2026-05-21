@@ -243,7 +243,7 @@ def get_system_status() -> dict[str, Any]:
                 "type": DB_TYPE,
                 "initialized": True
             },
-            "version": "Medical v2.0"
+            "version": "大学生面部微表情心理健康评估系统"
         }
     except Exception as e:
         logger.error(f"获取系统状态失败: {e}")
@@ -259,7 +259,7 @@ def get_system_status() -> dict[str, Any]:
                 "type": DB_TYPE,
                 "initialized": True
             },
-            "version": "Medical v2.0"
+            "version": "大学生面部微表情心理健康评估系统"
         }
 
 
@@ -459,20 +459,34 @@ def health_assessment(current_user: dict[str, Any] = Depends(get_current_user)) 
 
 
 @app.get("/api/data/export")
-def export_data(current_user: dict[str, Any] = Depends(get_current_user)) -> PlainTextResponse:
+def export_data(current_user: dict[str, Any] = Depends(get_current_user)):
     recognitions = get_recent_recognitions(current_user["id"], limit=100)
-    # 添加 UTF-8 BOM 以解决 Excel 乱码问题
-    lines = ["\ufeff时间,微表情,置信度,强度,持续时长(ms),引擎"]
+    import csv
+    import io
+    from starlette.responses import StreamingResponse
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["时间", "微表情", "置信度", "强度", "持续时长(ms)", "引擎"])
     for item in recognitions:
-        lines.append(
-            f"{item['created_at']},{item['label']},{item['confidence']},{item['intensity']},{item['duration_ms']},{item['engine']}"
-        )
-    csv_content = "\n".join(lines)
-    return PlainTextResponse(
-        content=csv_content,
+        writer.writerow([
+            item['created_at'],
+            item['label'],
+            item['confidence'],
+            item['intensity'],
+            item['duration_ms'],
+            item['engine']
+        ])
+    
+    output.seek(0)
+    response = StreamingResponse(
+        iter([output.getvalue()]),
         media_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="micro-expression-export.csv"'},
+        headers={
+            "Content-Disposition": "attachment; filename=emotion-export.csv; charset=utf-8-sig"
+        }
     )
+    return response
 
 
 @app.get("/api/membership/plans")

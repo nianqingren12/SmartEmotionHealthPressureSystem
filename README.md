@@ -1,4 +1,4 @@
-# AI 情绪健康与压力临床评估系统 (Medical v2.0)
+# 智能情绪健康与压力临床测评系统
 
 本项目是一个基于**计算机视觉与面部微表情识别技术**的临床级心理健康监测与压力评估商业化原型。它将前沿的深度学习技术与临床心理学标准相结合，专注于可视化情绪分析，为个人情绪管理、企业员工关怀及医疗辅助诊断提供数据支撑。
 
@@ -58,6 +58,10 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 访问地址：[http://localhost:8000](http://localhost:8000)
 
+方案二：
+项目目录1：python -m uvicorn backend.main:app --reload --port 8000
+项目目录2：python -m http.server 8080
+访问网址：http://localhost:8080/frontend/index.html
 ### 使用流程
 1. **注册/登录**：创建个人账号以保存历史评估数据
 2. **实时检测**：开启摄像头进行视频流情绪分析
