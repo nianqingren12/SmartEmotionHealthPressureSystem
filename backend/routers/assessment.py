@@ -2,14 +2,73 @@
 
 from __future__ import annotations
 
+import logging
+import os
 import random
 from typing import Any
 
+import httpx
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from backend.db import log_audit_action, utc_now
 from backend.psych_assessment import PsychologicalAssessment
+
+logger = logging.getLogger(__name__)
+
+DEEPSEEK_ENABLED = os.getenv("DEEPSEEK_ENABLED", "false").lower() == "true"
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+
+SYSTEM_PROMPT = (
+    "你是一个专业的AI心理咨询师，拥有临床心理学背景。你的职责是："
+    "1. 倾听用户的情绪困扰，给予共情和理解；"
+    "2. 提供基于认知行为疗法（CBT）和正念疗法的实用建议；"
+    "3. 引导用户进行自我觉察和情绪调节；"
+    "4. 在必要时建议用户寻求线下专业帮助。"
+    "请用温暖、专业、简洁的中文回复，控制在200字以内。"
+    "如果用户表达出自伤或自杀倾向，请立即建议拨打心理援助热线（010-82951332）。"
+)
+
+FALLBACK_RESPONSES = [
+    "感谢您的分享。您提到的情况很常见，很多人都会经历类似的困扰。建议您尝试：1）每天留出15分钟进行深呼吸练习；2）与信任的朋友或家人沟通；3）如果持续感到困扰，建议寻求专业心理咨询。请记住，您不是一个人在面对这些问题。",
+    "我理解您现在可能感到很不容易。情绪的起伏是正常的，重要的是如何学会与它们相处。您可以尝试写情绪日记，记录每天的感受，这有助于更好地了解自己的情绪模式。同时，保持规律的作息和适度的运动也很重要。",
+    "您的感受是真实且有意义的。面对压力和挑战时，感到焦虑或低落是正常的反应。建议您关注当下，尝试正念练习，帮助自己从纷乱的思绪中抽离出来。如果需要，随时可以再次与我交流。",
+    "听到您的困扰，我感到很关心。请记住，寻求帮助不是软弱，而是勇敢的表现。您可以考虑与专业咨询师谈谈，他们能提供更具针对性的支持和指导。在此之前，试着对自己多一些宽容和理解。",
+    "情绪就像天气一样，有晴天也有雨天。您现在可能正经历一段困难时期，但请相信这只是暂时的。试着做一些能让自己感到平静的事情，比如听音乐、散步或做一些深呼吸。照顾好自己最重要。",
+]
+
+
+async def _call_deepseek(user_message: str) -> str | None:
+    if not DEEPSEEK_API_KEY:
+        return None
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{DEEPSEEK_BASE_URL}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": DEEPSEEK_MODEL,
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": user_message},
+                    ],
+                    "max_tokens": 600,
+                    "temperature": 0.7,
+                },
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                return data["choices"][0]["message"]["content"].strip()
+            logger.warning("DeepSeek API returned %s: %s", resp.status_code, resp.text[:200])
+            return None
+    except Exception as exc:
+        logger.warning("DeepSeek API call failed: %s", exc)
+        return None
 
 router = APIRouter(tags=["Assessment"])
 
@@ -166,12 +225,22 @@ def book_consultation(
 
 
 @router.post("/api/consultation/anonymous")
-def anonymous_consultation(payload: AnonymousConsultPayload) -> dict[str, Any]:
-    responses = [
-        "感谢您的分享。您提到的情况很常见，很多人都会经历类似的困扰。建议您尝试：1）每天留出15分钟进行深呼吸练习；2）与信任的朋友或家人沟通；3）如果持续感到困扰，建议寻求专业心理咨询。请记住，您不是一个人在面对这些问题。",
-        "我理解您现在可能感到很不容易。情绪的起伏是正常的，重要的是如何学会与它们相处。您可以尝试写情绪日记，记录每天的感受，这有助于更好地了解自己的情绪模式。同时，保持规律的作息和适度的运动也很重要。",
-        "您的感受是真实且有意义的。面对压力和挑战时，感到焦虑或低落是正常的反应。建议您关注当下，尝试正念练习，帮助自己从纷乱的思绪中抽离出来。如果需要，随时可以再次与我交流。",
-        "听到您的困扰，我感到很关心。请记住，寻求帮助不是软弱，而是勇敢的表现。您可以考虑与专业咨询师谈谈，他们能提供更具针对性的支持和指导。在此之前，试着对自己多一些宽容和理解。",
-        "情绪就像天气一样，有晴天也有雨天。您现在可能正经历一段困难时期，但请相信这只是暂时的。试着做一些能让自己感到平静的事情，比如听音乐、散步或做一些深呼吸。照顾好自己最重要。",
-    ]
-    return {"response": random.choice(responses), "anonymous": True, "timestamp": utc_now()}
+async def anonymous_consultation(payload: AnonymousConsultPayload) -> dict[str, Any]:
+    response_text: str | None = None
+    source = "fallback"
+
+    if DEEPSEEK_ENABLED:
+        response_text = await _call_deepseek(payload.message)
+        if response_text:
+            source = "deepseek"
+
+    if response_text is None:
+        response_text = random.choice(FALLBACK_RESPONSES)
+        source = "fallback"
+
+    return {
+        "response": response_text,
+        "anonymous": True,
+        "source": source,
+        "timestamp": utc_now(),
+    }

@@ -59,7 +59,7 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 打开**第一个终端窗口**，启动后端服务：
 ```powershell
 cd e:\new_deeplearn3.0
-python -m uvicorn backend.main:app --reload --port 8000
+.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
 ```
 
 打开**第二个终端窗口**，启动前端服务：
@@ -74,7 +74,7 @@ python -m http.server 8080
 如需简化，可将前端文件集成到后端，只需启动一个服务：
 ```powershell
 cd e:\new_deeplearn3.0
-python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 访问地址：[http://localhost:8000](http://localhost:8000)

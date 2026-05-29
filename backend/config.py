@@ -37,7 +37,7 @@ class AppConfig:
     redis_port: int = 6379
 
     # CORS
-    cors_origins: list[str] = field(default_factory=lambda: ["http://localhost:3000", "http://localhost:8000"])
+    cors_origins: list[str] = field(default_factory=lambda: ["http://localhost:3000", "http://localhost:8000", "http://localhost:8080"])
 
     # AI Inference
     inference_mode: str = "demo"  # demo / pytorch / onnx
@@ -111,6 +111,10 @@ def _parse_cors_origins(raw: str) -> list[str]:
         return AppConfig().cors_origins
     return [o.strip() for o in raw.split(",") if o.strip()]
 
+
+# Load .env file before reading config
+from dotenv import load_dotenv
+load_dotenv(ROOT_DIR / ".env")
 
 # Load config once at module import
 config: AppConfig = load_config()
