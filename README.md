@@ -1,4 +1,4 @@
-# 智能情绪健康与压力临床测评系统演示文稿 (Medical v4.0)
+# 智能情绪健康与压力临床测评系统演示文稿 (Medical v6.0)
 
 本项目是一个基于**计算机视觉与面部微表情识别技术**的临床级心理健康监测与压力评估商业化原型。它将前沿的深度学习技术与临床心理学标准相结合，专注于可视化情绪分析，为个人情绪管理、企业员工关怀及医疗辅助诊断提供数据支撑。
 
@@ -52,16 +52,82 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 启动系统
-在项目根目录下执行：
+
+本项目采用**前后端分离**架构，需启动两个服务：
+
+#### 方式一：开发模式（推荐）
+打开**第一个终端窗口**，启动后端服务：
 ```powershell
-.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+cd e:\new_deeplearn3.0
+python -m uvicorn backend.main:app --reload --port 8000
 ```
+
+打开**第二个终端窗口**，启动前端服务：
+```powershell
+cd e:\new_deeplearn3.0\frontend
+python -m http.server 8080
+```
+
+访问地址：[http://localhost:8080](http://localhost:8080)
+
+#### 方式二：单服务模式
+如需简化，可将前端文件集成到后端，只需启动一个服务：
+```powershell
+cd e:\new_deeplearn3.0
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
+
 访问地址：[http://localhost:8000](http://localhost:8000)
 
-方案二：
-项目目录1：python -m uvicorn backend.main:app --reload --port 8000
-项目目录2：python -m http.server 8080
-访问网址：http://localhost:8080/frontend/index.html
+> **注意**：开发模式下前后端独立运行，便于调试；单服务模式适合快速预览。
+
+### DeepSeek AI 配置（可选）
+
+匿名咨询功能默认使用固定安抚话术。接入 DeepSeek API 后，可升级为真正的 AI 智能问答。
+
+**1. 获取 API Key**
+
+前往 [platform.deepseek.com](https://platform.deepseek.com) 注册并创建 API Key。
+
+**2. 配置**
+
+编辑项目根目录的 `.env` 文件，填入 Key：
+
+```ini
+DEEPSEEK_ENABLED=true
+DEEPSEEK_API_KEY=sk-你的密钥
+```
+
+**3. 关闭 AI**
+
+不需要改代码。将 `.env` 中的 `DEEPSEEK_ENABLED` 设为 `false` 即可退回固定话术：
+
+```ini
+DEEPSEEK_ENABLED=false
+```
+
+**4. 推理引擎模式**
+
+通过 `APP_INFERENCE_MODE` 切换推理模式：
+
+```ini
+# demo = 假随机结果 / pytorch = 真实模型 / onnx = 高性能推理
+APP_INFERENCE_MODE=pytorch
+```
+
+改完重启后端即生效。不配置 Key 或 API 调用失败时，系统会自动降级。
+
+### 模型训练
+
+训练脚本位于 `scripts/train.py`，支持 GPU 加速：
+
+```powershell
+cd e:\new_deeplearn3.0
+.venv\Scripts\python.exe scripts\train.py
+```
+
+数据集要求：`datasets/data.csv`（支持像素字符串或文件名两种格式）。
+
 ### 使用流程
 1. **注册/登录**：创建个人账号以保存历史评估数据
 2. **实时检测**：开启摄像头进行视频流情绪分析

@@ -23,7 +23,7 @@ class AppConfig:
     debug: bool = False
     secret_key: str = "micro-expression-demo-secret-key-2024"
     app_title: str = "微表情识别商业化原型"
-    app_version: str = "2.0.0"
+    app_version: str = "5.0.0"
 
     # Database
     db_type: str = "sqlite"
@@ -64,6 +64,9 @@ class AppConfig:
     rate_limit_api_per_minute: int = 60
     rate_limit_enterprise_per_minute: int = 300
 
+    # Activation codes (comma-separated: "CODE:tier:days:credits,CODE:tier:days:credits")
+    activation_codes: str = "BASIC_30D_10R:普通会员:30:10,PRO_30D_99R:高级会员:30:99,ENTERPRISE_365D_999R:企业会员:365:999"
+
     # Request limits
     max_body_size_mb: int = 10
 
@@ -94,6 +97,7 @@ def load_config() -> AppConfig:
         smtp_port=int(os.getenv("SMTP_PORT", "587")),
         smtp_username=os.getenv("SMTP_USERNAME", ""),
         smtp_password=os.getenv("SMTP_PASSWORD", ""),
+        activation_codes=os.getenv("ACTIVATION_CODES", AppConfig.activation_codes),
         rate_limit_enabled=os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true",
         rate_limit_auth_per_minute=int(os.getenv("RATE_LIMIT_AUTH_PER_MINUTE", "10")),
         rate_limit_api_per_minute=int(os.getenv("RATE_LIMIT_API_PER_MINUTE", "60")),

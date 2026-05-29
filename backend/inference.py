@@ -256,8 +256,12 @@ class PytorchInferenceEngine(DemoInferenceEngine):
                 self.model = ExpressionModel(num_classes=len(self.labels)).to(self.device)
                 
                 if os.path.exists(self.model_path):
-                    # 加载权重
-                    self.model.load_state_dict(torch.load(self.model_path, map_location=self.device, weights_only=True))
+                    # 加载权重 (兼容不同 PyTorch 版本)
+                    try:
+                        state_dict = torch.load(self.model_path, map_location=self.device, weights_only=True)
+                    except TypeError:
+                        state_dict = torch.load(self.model_path, map_location=self.device)
+                    self.model.load_state_dict(state_dict)
                     self.model.eval()
                     self._model_loaded = True
                     logger.info(f"成功加载模型: {self.model_path}")
@@ -573,15 +577,16 @@ class ONNXInferenceEngine(DemoInferenceEngine):
 
 def get_inference_engine() -> DemoInferenceEngine:
     """获取推理引擎实例（单例模式）"""
-    engine_mode = os.getenv("APP_INFERENCE_MODE", "pytorch").lower()
-    
+    from backend.config import config
+    engine_mode = config.inference_mode
+
     if engine_mode == "onnx":
         # 优先尝试ONNX引擎
         return ONNXInferenceEngine()
     elif engine_mode == "pytorch":
         # 使用PyTorch引擎
         return PytorchInferenceEngine()
-    
+
     return DemoInferenceEngine()
 
 

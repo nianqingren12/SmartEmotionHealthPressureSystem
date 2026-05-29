@@ -1,4 +1,4 @@
-"""FastAPI application entry point — Micro-Expression Recognition Commercial Prototype v2.1."""
+"""FastAPI application entry point — Micro-Expression Recognition Commercial Prototype v5.0."""
 
 from __future__ import annotations
 

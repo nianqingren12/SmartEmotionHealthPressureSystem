@@ -186,13 +186,15 @@ def init_db() -> None:
         count = row["count"] if DB_TYPE == "mysql" else row[0]
         
         if count == 0:
-            codes = [
-                ("BASIC_30D_10R", "普通会员", 30, 10, utc_now()),
-                ("PRO_30D_99R", "高级会员", 30, 99, utc_now()),
-                ("ENTERPRISE_365D_999R", "企业会员", 365, 999, utc_now()),
-            ]
-            insert_sql = "INSERT INTO recharge_codes (code, membership_tier, valid_days, report_credits, created_at) VALUES (%s, %s, %s, %s, %s)" if DB_TYPE == "mysql" else "INSERT INTO recharge_codes (code, membership_tier, valid_days, report_credits, created_at) VALUES (?, ?, ?, ?, ?)"
-            cursor.executemany(insert_sql, codes)
+            from backend.config import config
+            codes = []
+            for entry in config.activation_codes.split(","):
+                parts = entry.strip().split(":")
+                if len(parts) == 4:
+                    codes.append((parts[0], parts[1], int(parts[2]), int(parts[3]), utc_now()))
+            if codes:
+                insert_sql = "INSERT INTO recharge_codes (code, membership_tier, valid_days, report_credits, created_at) VALUES (%s, %s, %s, %s, %s)" if DB_TYPE == "mysql" else "INSERT INTO recharge_codes (code, membership_tier, valid_days, report_credits, created_at) VALUES (?, ?, ?, ?, ?)"
+                cursor.executemany(insert_sql, codes)
         conn.commit()
 
 
